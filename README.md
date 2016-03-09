@@ -146,7 +146,7 @@ This template engine supports many other directives like
 `:href`, `:disabled`, `:checked`, `:selected`. All of them are inspired
 on Angular's default directives.
 
-If you miss some directive, be free to open an issue, send a PR ou see the section below:
+If you miss some directive, be free to open an issue, send a PR or see the section below:
 
 ## Custom Directives
 
