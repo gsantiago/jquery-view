@@ -22,10 +22,6 @@ Here's an example:
     <strong>{{user.name}}</strong>
     <a href="mailto:{{user.email}}" :show="user.email">Send email</a>
   </li>
-  <form :submit="submit($event)">
-    <input type="text" placeholder="Type a name" :data="name">
-    <button type="submit">Add</button>
-  </form>
 </ul>
 ```
 
