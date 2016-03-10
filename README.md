@@ -1,6 +1,8 @@
 # jquery-view
 
-**The View Pattern for jQuery**
+[![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg)](https://codeclimate.com/github/gsantiago/jquery-view)
+[![Test Coverage](https://codeclimate.com/github/gsantiago/jquery-view/badges/coverage.svg)](https://codeclimate.com/github/gsantiago/jquery-view/coverage)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 ## Template Engine
 
