@@ -76,7 +76,7 @@ Template.directives = {
     var needle = match[1]
     var collection = this.compile(match[2])
     var $clone = $el.clone().removeAttr(':repeat')
-    var $parent = $el.parent()
+    // var $parent = $el.parent()
     var template = new Template()
     var oldReferences = {
       needle: self.context[needle],
@@ -84,7 +84,7 @@ Template.directives = {
       $key: self.context.$key
     }
 
-    //$el.remove()
+    // $el.remove()
     var $holder = $('<div>')
     var counter = 0
 
@@ -98,7 +98,7 @@ Template.directives = {
       template.context = self.context
       $itemHolder.html(template.parse())
       $item = $($itemHolder.html())
-      //$item.html(template.parse())
+      // $item.html(template.parse())
       $item.appendTo($holder)
       counter += 1
     })
@@ -175,7 +175,7 @@ fn.compile = function (expr, obj) {
     if ($.isArray(val)) return [val]
     return val
   })
-  var fn = new Function(keys, 'return ' + expr)
+  var fn = new Function(keys, 'return ' + expr) // eslint-disable-line
   var ret = ''
 
   try {
