@@ -506,6 +506,111 @@ describe('Template#directives', function () {
     expect(result).toEqual(expected)
   })
 
+  it('`:repeat` should expose special variables', function () {
+    var tpl = '<div>' +
+                '$index: {{$index}}\n' +
+                '$key: {{$key}}\n' +
+                '$total: {{$total}}\n' +
+                '$odd: {{$odd}}\n' +
+                '$even: {{$even}}\n' +
+                '$middle: {{$middle}}\n' +
+                '$first: {{$first}}\n' +
+                '$last: {{$last}}\n' +
+                'user: {{user}}\n' +
+                '<div :repeat="user in users">\n' +
+                  '$index: {{$index}}\n' +
+                  '$key: {{$key}}\n' +
+                  '$total: {{$total}}\n' +
+                  '$odd: {{$odd}}\n' +
+                  '$even: {{$even}}\n' +
+                  '$middle: {{$middle}}\n' +
+                  '$first: {{$first}}\n' +
+                  '$last: {{$last}}\n' +
+                  'user: {{user}}\n' +
+                '</div>' +
+                '$index: {{$index}}\n' +
+                '$key: {{$key}}\n' +
+                '$total: {{$total}}\n' +
+                '$odd: {{$odd}}\n' +
+                '$even: {{$even}}\n' +
+                '$middle: {{$middle}}\n' +
+                '$first: {{$first}}\n' +
+                '$last: {{$last}}\n' +
+                'user: {{user}}\n' +
+              '</div>'
+
+    var expected = '<div>' +
+                      '$index: go index\n' +
+                      '$key: k3y\n' +
+                      '$total: 999\n' +
+                      '$odd: yeah\n' +
+                      '$even: nope\n' +
+                      '$middle: what\n' +
+                      '$first: hein\n' +
+                      '$last: wow\n' +
+                      'user: dafuq\n' +
+                      '<div>\n' +
+                        '$index: 0\n' +
+                        '$key: 0\n' +
+                        '$total: 3\n' +
+                        '$odd: true\n' +
+                        '$even: false\n' +
+                        '$middle: false\n' +
+                        '$first: true\n' +
+                        '$last: false\n' +
+                        'user: Guilherme\n' +
+                      '</div>' +
+                      '<div>\n' +
+                        '$index: 1\n' +
+                        '$key: 1\n' +
+                        '$total: 3\n' +
+                        '$odd: false\n' +
+                        '$even: true\n' +
+                        '$middle: true\n' +
+                        '$first: false\n' +
+                        '$last: false\n' +
+                        'user: Junin\n' +
+                      '</div>' +
+                      '<div>\n' +
+                        '$index: 2\n' +
+                        '$key: 2\n' +
+                        '$total: 3\n' +
+                        '$odd: true\n' +
+                        '$even: false\n' +
+                        '$middle: false\n' +
+                        '$first: false\n' +
+                        '$last: true\n' +
+                        'user: Zillaum\n' +
+                      '</div>' +
+                      '$index: go index\n' +
+                      '$key: k3y\n' +
+                      '$total: 999\n' +
+                      '$odd: yeah\n' +
+                      '$even: nope\n' +
+                      '$middle: what\n' +
+                      '$first: hein\n' +
+                      '$last: wow\n' +
+                      'user: dafuq\n' +
+                    '</div>'
+
+    var template = new Template(tpl)
+    var initialContext = {
+      $index: 'go index',
+      $key: 'k3y',
+      $total: 999,
+      $odd: 'yeah',
+      $even: 'nope',
+      $middle: 'what',
+      $first: 'hein',
+      $last: 'wow',
+      user: 'dafuq',
+      users: ['Guilherme', 'Junin', 'Zillaum']
+    }
+    var result = template.parse(initialContext)
+
+    expect(result).toEqual(expected)
+  })
+
 })
 
 describe('Template#addDirective', function () {

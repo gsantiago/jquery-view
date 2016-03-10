@@ -73,41 +73,59 @@ Template.directives = {
   repeat: function ($el, value, props) {
     var self = this
     var match = value.match(/(.*)\S*in\S*(.*)/)
-    var needle = match[1]
+    var needle = match[1].trim()
     var collection = this.compile(match[2])
     var $clone = $el.clone().removeAttr(':repeat')
-    // var $parent = $el.parent()
     var template = new Template()
-    var oldReferences = {
-      needle: self.context[needle],
-      $index: self.context.$index,
-      $key: self.context.$key
-    }
 
-    // $el.remove()
+    var specials = [
+      '$index', '$key', '$total', '$first', '$last', '$middle', '$even', '$odd'
+    ]
+
+    var references = {}
+
+    references[needle] = self.context[needle]
+
+    $.each(specials, function (index, prop) {
+      references[prop] = self.context[prop]
+    })
+
     var $holder = $('<div>')
     var counter = 0
+    var total = $.isArray(collection)
+      ? collection.length
+      : Object.keys(collection).length
 
     $.each(collection, function (key, val) {
       var $item = $clone.clone()
       var $itemHolder = $('<div>').append($item)
       self.context[needle] = val
+
+      $.extend(self.context, {
+        $index: counter,
+        $key: key,
+        $total: total,
+        $first: counter === 0,
+        $last: counter === total - 1,
+        $even: (counter + 1) % 2 === 0,
+        $odd: !((counter + 1) % 2 === 0),
+        $middle: counter > 0 && counter < (total - 1)
+      })
+
       self.context.$index = counter
       self.context.$key = key
+
       template.setSource($itemHolder.html())
       template.context = self.context
       $itemHolder.html(template.parse())
       $item = $($itemHolder.html())
-      // $item.html(template.parse())
       $item.appendTo($holder)
       counter += 1
     })
 
     $el.replaceWith($holder.html())
 
-    self.context[needle] = oldReferences.needle
-    self.context.$index = oldReferences.$index
-    self.context.$key = oldReferences.$key
+    $.extend(self.context, references)
   }
 }
 
