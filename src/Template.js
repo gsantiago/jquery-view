@@ -195,13 +195,17 @@ fn.compile = function (expr, obj) {
 
 fn.supplant = function (str) {
   var self = this
-  var result = str.replace(
-    /{{([^{}]*)}}/g,
-      function (a, b) {
-        var r = self.compile(b)
-          return r
-      }
-    )
+
+  var fn = function (a, b) {
+    return self.compile(b)
+  }
+
+  var result = str.replace(/{{([^{}]*)}}/g, function (a, b) {
+    return utils.escape(fn(a, b))
+  })
+
+  result = result.replace(/{%([^{%}]*)%}/g, fn)
+
   return result
 }
 

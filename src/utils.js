@@ -32,3 +32,24 @@ exports.kebabCase = function (str) {
     return '-' + match.toLowerCase()
 	})
 }
+
+/**
+ * Escapes a string for insertion into HTML,
+ * replacing &, <, >, ", `, and ' characters.
+ * @param {String} str
+ */
+
+exports.escape = function (str) {
+  var entityMap = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    '\'': '&#x27;',
+    '/': '&#x2F;'
+  }
+
+  return String(str).replace(/[&<>"'\/]/g, function (s) {
+    return entityMap[s]
+  })
+}

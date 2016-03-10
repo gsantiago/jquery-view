@@ -30,3 +30,13 @@ describe('utils#kebabCase', function () {
   })
 
 })
+
+describe('utils#escape', function () {
+
+  it('should escape string', function () {
+    var expected = 'You &amp; I aren&#x27;t &lt;&quot;GREAT&quot;&gt;'
+    var str = 'You & I aren\'t <"GREAT">'
+    expect(utils.escape(str)).toEqual(expected)
+  })
+
+})

@@ -93,6 +93,22 @@ describe('Template#supplant', function () {
     expect(result).toEqual('Full name: Guilherme Santiago!')
   })
 
+  it('should escape string', function () {
+    this.template.context.str = 'You & I aren\'t <"GREAT">'
+    var expected = 'You &amp; I aren&#x27;t &lt;&quot;GREAT&quot;&gt;'
+    var expr = '{{str}}'
+    var result = this.template.supplant(expr)
+
+    expect(result).toEqual(expected)
+  })
+
+  it('should not escape string', function () {
+    var expected = this.template.context.str = 'You & I aren\'t <"GREAT">'
+    var expr = '{% str %}'
+    var result = this.template.supplant(expr)
+
+    expect(result).toEqual(expected)
+  })
 })
 
 describe('Template#parse', function () {
