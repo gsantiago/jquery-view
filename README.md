@@ -1,5 +1,6 @@
 # jquery-view
 
+[![Build Status](https://travis-ci.org/gsantiago/jquery-view.svg?branch=master)](https://travis-ci.org/gsantiago/jquery-view)
 [![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg)](https://codeclimate.com/github/gsantiago/jquery-view)
 [![Test Coverage](https://codeclimate.com/github/gsantiago/jquery-view/badges/coverage.svg)](https://codeclimate.com/github/gsantiago/jquery-view/coverage)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
