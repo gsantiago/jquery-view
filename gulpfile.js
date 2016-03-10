@@ -4,13 +4,13 @@
 
 var gulp = require('gulp')
 var browserify = require('browserify')
-var gulp = require('gulp')
 var source = require('vinyl-source-stream')
 var buffer = require('vinyl-buffer')
 var uglify = require('gulp-uglify')
 var sourcemaps = require('gulp-sourcemaps')
 var gutil = require('gulp-util')
 var standard = require('gulp-standard')
+var Server = require('karma').Server
 
 /**
  * Browserify.
@@ -45,6 +45,23 @@ gulp.task('standard', function () {
       breakOnError: true
     }))
 })
+
+/**
+ * Karma.
+ */
+
+gulp.task('karma', function (done) {
+  new Server({
+    configFile: __dirname + '/karma.conf.js',
+    singleRun: true
+  }, done).start()
+})
+
+/**
+ * Test.
+ */
+
+gulp.task('test', ['standard', 'karma'])
 
 /**
  * Default.
