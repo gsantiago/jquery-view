@@ -553,8 +553,8 @@ describe('Template#directives', function () {
                         '$index: 0\n' +
                         '$key: 0\n' +
                         '$total: 3\n' +
-                        '$odd: true\n' +
-                        '$even: false\n' +
+                        '$odd: false\n' +
+                        '$even: true\n' +
                         '$middle: false\n' +
                         '$first: true\n' +
                         '$last: false\n' +
@@ -564,8 +564,8 @@ describe('Template#directives', function () {
                         '$index: 1\n' +
                         '$key: 1\n' +
                         '$total: 3\n' +
-                        '$odd: false\n' +
-                        '$even: true\n' +
+                        '$odd: true\n' +
+                        '$even: false\n' +
                         '$middle: true\n' +
                         '$first: false\n' +
                         '$last: false\n' +
@@ -575,8 +575,8 @@ describe('Template#directives', function () {
                         '$index: 2\n' +
                         '$key: 2\n' +
                         '$total: 3\n' +
-                        '$odd: true\n' +
-                        '$even: false\n' +
+                        '$odd: false\n' +
+                        '$even: true\n' +
                         '$middle: false\n' +
                         '$first: false\n' +
                         '$last: true\n' +

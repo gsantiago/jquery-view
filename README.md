@@ -80,9 +80,6 @@ Replace the element's content by the expression given.
 ### :repeat
 
 Create a loop similar to `ng-repeat` from Angular.
-In each loop, it will provide two additional variables:
-`$index` and `$key`.
-
 
 ```html
 <ul>
@@ -91,6 +88,19 @@ In each loop, it will provide two additional variables:
   </li>
 </ul>
 ```
+
+For each loop, `:repeat` will provide special properties:
+
+|Variable|Type|Details|
+|--------|----|-------|
+| `$index` | Number | Iterator's offset (0..length-1).
+| `$key` | Number or String | Item's index for arrays, or key for objects.
+| `$total` | Number | The collection's length.
+| `$first` | Boolean | true if the repeated element is first in the iterator.
+| `$middle` | Boolean | true if the repeated element is between the first and last in the iterator.
+| `$last` | Boolean | true if the repeated element is last in the iterator.
+| `$even` | Boolean | true if the iterator position is even (otherwise false).
+| `$odd` | Boolean | true if the iterator position is odd (otherwise false).
 
 It also supports nested `:repeat`'s:
 

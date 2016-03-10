@@ -107,8 +107,8 @@ Template.directives = {
         $total: total,
         $first: counter === 0,
         $last: counter === total - 1,
-        $even: (counter + 1) % 2 === 0,
-        $odd: !((counter + 1) % 2 === 0),
+        $even: counter % 2 === 0,
+        $odd: !(counter % 2 === 0),
         $middle: counter > 0 && counter < (total - 1)
       })
 
