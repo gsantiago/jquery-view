@@ -43,7 +43,7 @@ module.exports = function(config) {
 
 
     // web server port
-    hostname: process.env.IP,
+    hostname: process.env.IP || 'localhost',
     port: process.env.PORT || 9876,
 
 
