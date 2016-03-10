@@ -11,7 +11,7 @@ jQuery View provides a simple DOM-based template engine. Basically, you
 can use `{{myExpression}}` to print and evaluate expressions, and special
 attributes called `directives` to manipulate the elements.
 
-It's heavily inspired on Angular's Template Engine, but it's much much simplier.
+It's heavily inspired by Angular's Templates, but it's much much simplier.
 
 Here's an example:
 
@@ -153,9 +153,9 @@ Is rendered to:
 
 This template engine supports many other directives like
 `:href`, `:disabled`, `:checked`, `:selected`. All of them are inspired
-on Angular's default directives.
+by Angular's default directives.
 
-If you miss some directive, be free to open an issue, send a PR or see the section below:
+If you miss some directive, feel free to open an issue, send a PR or see the section below:
 
 ## Custom Directives
 
