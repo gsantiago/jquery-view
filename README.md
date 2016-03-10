@@ -5,6 +5,18 @@
 [![Test Coverage](https://codeclimate.com/github/gsantiago/jquery-view/badges/coverage.svg)](https://codeclimate.com/github/gsantiago/jquery-view/coverage)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
+## Introduction
+
+TODO
+
+## Installation
+
+TODO
+
+## Usage
+
+TODO
+
 ## Template Engine
 
 jQuery View provides a simple DOM-based template engine. Basically, you
