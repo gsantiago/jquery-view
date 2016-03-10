@@ -38,30 +38,6 @@ Template.directives = {
     })
   },
 
-  disabled: function ($el, value, props) {
-    if (this.compile(value)) {
-      $el.attr('disabled', true)
-    } else {
-      $el.removeAttr('disabled')
-    }
-  },
-
-  selected: function ($el, value, props) {
-    if (this.compile(value)) {
-      $el.attr('selected', true)
-    } else {
-      $el.removeAttr('selected')
-    }
-  },
-
-  checked: function ($el, value, props) {
-    if (this.compile(value)) {
-      $el.attr('checked', true)
-    } else {
-      $el.removeAttr('checked')
-    }
-  },
-
   href: function ($el, value, props) {
     $el.attr('href', this.compile(value))
   },
@@ -128,6 +104,16 @@ Template.directives = {
     $.extend(self.context, references)
   }
 }
+
+$.each(['selected', 'checked', 'disabled'], function (index, dir) {
+  Template.directives[dir] = function ($el, value, props) {
+    if (this.compile(value)) {
+      $el.attr(dir, true)
+    } else {
+      $el.removeAttr(dir)
+    }
+  }
+})
 
 /**
  * Template constructor.
