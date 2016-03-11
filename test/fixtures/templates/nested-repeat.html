@@ -1,0 +1,8 @@
+<ol>
+  <li :repeat="user in users">
+    {{user.name}}
+    <span class="skill" :repeat="skill in user.skills">
+      {{skill}}
+    </span>
+  </li>
+</ol>

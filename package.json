@@ -12,6 +12,7 @@
   "license": "MIT",
   "main": "jquery-view.js",
   "devDependencies": {
+    "brfs": "^1.4.3",
     "browserify": "^13.0.0",
     "gulp": "^3.9.1",
     "gulp-sourcemaps": "^1.6.0",

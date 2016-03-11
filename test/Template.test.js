@@ -6,626 +6,391 @@
 
 var $ = require('jquery')
 var Template = require('../src/Template')
+var fs = require('fs')
 
-describe('Template#compile', function () {
+/**
+ * Template methods.
+ */
 
-  beforeEach(function () {
-    this.template = new Template()
+describe('The method', function () {
+
+  describe('Template#compile', function () {
+
+    beforeEach(function () {
+      this.template = new Template()
+    })
+
+    it('should return 4', function () {
+      var result = this.template.compile('2 + 2')
+      expect(result).toEqual(4)
+    })
+
+    it('should return 10', function () {
+      var result = this.template.compile('((10 / 2) * 3) - 5')
+      expect(result).toEqual(10)
+    })
+
+    it('should concatenate strings', function () {
+      var result = this.template.compile('"Hello, " + "World!"')
+      expect(result).toEqual('Hello, World!')
+    })
+
+    it('should replace the `name` variable', function () {
+      this.template.context = {
+        name: 'Guilherme'
+      }
+
+      var result = this.template.compile('"Your name is " + name')
+      expect(result).toEqual('Your name is Guilherme')
+    })
+
+    it('should solve operations and concatenations', function () {
+      this.template.context = {
+        name: 'Guilherme',
+        lastname: 'Santiago',
+        age: 20
+      }
+
+      var result = this.template.compile('name + " " + lastname + " is " + (age + 1) + " years old"')
+      var expected = 'Guilherme Santiago is 21 years old'
+      expect(result).toEqual(expected)
+    })
+
+    it('should return an array', function () {
+      var expected = ['html', 'js', ['css', ['stylus', 'sass', 'less']]]
+      var result = this.template.compile('["html", "js", ["css", ["stylus", "sass", "less"]]]')
+      expect(result).toEqual(expected)
+    })
+
+    it('should return an object', function () {
+      var expected = {
+        name: 'object',
+        size: {width: 20, height: 30}
+      }
+
+      var result = this.template.compile('{name: "object", size: {width: 20, height: 30}}')
+      expect(result).toEqual(expected)
+    })
+
   })
 
-  it('should return 5', function () {
-    var result = this.template.compile('2 + 3')
-    expect(result).toEqual(5)
+
+  describe('Template#supplant', function () {
+
+    beforeEach(function () {
+      this.template = new Template()
+    })
+
+    it('should return 8', function () {
+      var result = this.template.supplant('Your result is {{4 * 2}}')
+      expect(result).toEqual('Your result is 8')
+    })
+
+    it('should return full name', function () {
+      this.template.context = {
+        name: 'Guilherme',
+        lastname: 'Santiago'
+      }
+
+      var result = this.template.supplant('Your full name is {{name}} {{lastname}}!')
+      expect(result).toEqual('Your full name is Guilherme Santiago!')
+    })
+
+    it('should escape strings by default', function () {
+      this.template.context.str = 'You & I aren\'t <"GREAT">'
+      var expected = 'You &amp; I aren&#x27;t &lt;&quot;GREAT&quot;&gt;'
+      var result = this.template.supplant('{{str}}')
+      expect(result).toEqual(expected)
+    })
+
+    it('should return unescaped strings when `{% %}` delimiters are used', function () {
+      var expected = this.template.context.str = 'You & I aren\'t <"GREAT">'
+      var result = this.template.supplant('{% str %}')
+      expect(result).toEqual(expected)
+    })
+
+    it('should call a function', function (done) {
+      this.template.context = {
+        myFunc: function () {
+          done()
+        }
+      }
+
+      this.template.supplant('{{ myFunc() }}')
+    })
+
   })
 
-  it('should return 10', function () {
-    var result = this.template.compile('(10 / 2) * 2')
-    expect(result).toEqual(10)
+
+  describe('Template#parse', function () {
+
+    it('should render <div>', function () {
+      var template = new Template('<div>{{ name }} {% lastname %}</div>')
+      var result = template.parse({name: 'Guilherme', lastname: 'Santiago'})
+      expect(result).toEqual('<div>Guilherme Santiago</div>')
+    })
+
+    it('should render a simple node text', function () {
+      var template = new Template('This is my {{ str }}!!!')
+      var result = template.parse({str: 'text'})
+      expect(result).toEqual('This is my text!!!')
+    })
+
+    it('should render multiple elements', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/multiple-elements.html', 'utf8')
+      var expected = fs.readFileSync(__dirname + '/fixtures/templates/multiple-elements.expected.html', 'utf8')
+      var template = new Template(source)
+
+      var result = template.parse({
+        firstname: 'Guilherme',
+        description: '<strong>Front-end Developer</strong>',
+        user: {
+          name: 'Guilherme Santiago',
+          email: 'guilherme@email.com'
+        }
+      })
+
+      expect(result).toEqual(expected.trim())
+    })
+
   })
 
-  it('should concat strings', function () {
-    var result = this.template.compile('"Hello," + " world!"')
-    expect(result).toEqual('Hello, world!')
+
+  describe('Template#addDirective', function () {
+
+    it('should add a new directive', function () {
+      Template.addDirective('uppercase', function ($el, value, props) {
+        if (this.compile(value)) {
+          $el.text($el.text().toUpperCase())
+        }
+      })
+
+      var template = new Template('<div :uppercase="true">hello</div>')
+      var expected = '<div>HELLO</div>'
+      var result = template.parse()
+
+      expect(result).toEqual(result)
+    })
+
   })
 
-  it('should replace `name` variable', function () {
-    this.template.context = {name: 'Guilherme'}
-    var result = this.template.compile('"Hello, " + name')
-    expect(result).toEqual('Hello, Guilherme')
+  describe('Template#setSource', function () {
+
+    it('should set the template source', function () {
+      var template = new Template('{{ 1 + 2 }}')
+      expect(template.parse()).toEqual('3')
+      template.setSource('{{ 5 * 5 }}')
+      expect(template.parse()).toEqual('25')
+    })
+
   })
 
-  it('should resolve operation', function () {
-    this.template.context = {
-      name: 'Guilherme',
-      lastname: 'Santiago',
-      age: 20
-    }
+})
 
-    var result = this.template.compile('name + \' \' + lastname + \' is \' + (age + 1) + \' years old\'')
-    expect(result).toEqual('Guilherme Santiago is 21 years old')
-  })
 
-  it('should return an object', function () {
-    this.template.context = {
-      dimensions: {width: 200, height: 200}
-    }
+/**
+ * Directives
+ */
 
-    var result = this.template.compile('{width: dimensions.width, height: dimensions.height, value: true}')
-    expect(result).toEqual({
-      width: this.template.context.dimensions.width,
-      height: this.template.context.dimensions.height,
-      value: true
+describe('The directive', function () {
+
+  describe(':bind', function () {
+    it('should replace the element\'s text', function () {
+      var template = new Template('<span :bind="name">Your name</span>')
+      var result = template.parse({name: 'Guilhermão'})
+      expect(result).toEqual('<span>Guilhermão</span>')
     })
   })
 
-  it('should return an array', function () {
-    this.template.context = {
-      items: ['Item 1', 'Item 2', 'Item 3']
-    }
+  describe(':show', function () {
+    it('should show the element if expression given is truthy', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-show.html', 'utf8')
+      var expected1 = fs.readFileSync(__dirname + '/fixtures/templates/directive-show.expected1.html', 'utf8')
+      var expected2 = fs.readFileSync(__dirname + '/fixtures/templates/directive-show.expected2.html', 'utf8')
 
-    var result = this.template.compile('items')
-    expect(result).toEqual(this.template.context.items)
+      var template = new Template(source)
+      var result1 = template.parse({user: {name: 'Guilherme Santiago', email: 'guilherme@email.com'}})
+      var result2 = template.parse({user: {name: 'Zilla Zillão'}})
+
+      expect(result1).toEqual(expected1.trim())
+      expect(result2).toEqual(expected2.trim())
+    })
   })
 
-})
+  describe(':hide', function () {
+    it('should remove the element if the expression given is false', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-hide.html', 'utf8')
+      var expected1 = fs.readFileSync(__dirname + '/fixtures/templates/directive-hide.expected1.html', 'utf8')
+      var expected2 = fs.readFileSync(__dirname + '/fixtures/templates/directive-hide.expected2.html', 'utf8')
 
-describe('Template#supplant', function () {
+      var template = new Template(source)
+      var result1 = template.parse({user: {name: 'Guilherme Santiago', email: 'guilherme@email.com'}})
+      var result2 = template.parse({user: {name: 'Zilla Zillão'}})
 
-  beforeEach(function () {
-    this.template = new Template()
+      expect(result1).toEqual(expected1.trim())
+      expect(result2).toEqual(expected2.trim())
+    })
   })
 
-  it('should return 3', function () {
-    var expr = '1 + 2 = {{1 + 2}}'
-    var result = this.template.supplant(expr)
-    expect(result).toEqual('1 + 2 = 3')
+  describe(':class', function () {
+    it('should apply classes to element', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-class.html', 'utf8')
+      var expected1 = fs.readFileSync(__dirname + '/fixtures/templates/directive-class.expected1.html', 'utf8')
+      var expected2 = fs.readFileSync(__dirname + '/fixtures/templates/directive-class.expected2.html', 'utf8')
+
+      var template = new Template(source)
+      var result1 = template.parse({hasContainer: true, color: 'white', fontSize: 16})
+      var result2 = template.parse({hasContainer: true, color: 'black', fontSize: 18})
+
+      expect($(result1)[0]).toEqual($(expected1.trim())[0])
+      expect($(result2)[0]).toEqual($(expected2.trim())[0])
+    })
   })
 
-  it('should return full name', function () {
-    this.template.context = {
-      name: 'Guilherme',
-      lastname: 'Santiago'
-    }
+  describe(':selected', function () {
+    it('sould set `selected` attribute if the expression given is truthy', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-selected.html', 'utf8')
+      var expected1 = fs.readFileSync(__dirname + '/fixtures/templates/directive-selected.expected1.html', 'utf8')
+      var expected2 = fs.readFileSync(__dirname + '/fixtures/templates/directive-selected.expected2.html', 'utf8')
 
-    var expr = 'Full name: {{name}} {{lastname}}!'
-    var result = this.template.supplant(expr)
+      var template = new Template(source)
+      var result1 = $(template.parse({option: 1}))[0]
+      var result2 = $(template.parse({option: 3}))[0]
 
-    expect(result).toEqual('Full name: Guilherme Santiago!')
+      expect(result1).toEqual($(expected1)[0])
+      expect(result2).toEqual($(expected2)[0])
+    })
   })
 
-  it('should escape string', function () {
-    this.template.context.str = 'You & I aren\'t <"GREAT">'
-    var expected = 'You &amp; I aren&#x27;t &lt;&quot;GREAT&quot;&gt;'
-    var expr = '{{str}}'
-    var result = this.template.supplant(expr)
+  describe(':checked', function () {
+    it('should set `checked` attribute if the expression given is truthy', function () {
+      var source = '<input type="checkbox" :checked="expression">'
+      var expected1 = $('<input type="checkbox" checked="checked">')[0]
+      var expected2 = $('<input type="checkbox">')[0]
+      var template = new Template(source)
 
-    expect(result).toEqual(expected)
+      var result1 = $(template.parse({expression: true}))[0]
+      var result2 = $(template.parse({expression: false}))[0]
+
+      expect(result1).toEqual(expected1)
+      expect(result2).toEqual(expected2)
+    })
   })
 
-  it('should not escape string', function () {
-    var expected = this.template.context.str = 'You & I aren\'t <"GREAT">'
-    var expr = '{% str %}'
-    var result = this.template.supplant(expr)
-
-    expect(result).toEqual(expected)
-  })
-})
-
-describe('Template#parse', function () {
-
-  it('should render div', function () {
-    var template = new Template('<div>{{ name }}</div>')
-    var result = template.parse({name: 'Guilherme'})
-    expect(result).toEqual('<div>Guilherme</div>')
+  describe(':href', function () {
+    it('should set `href` attribute to the expression given', function () {
+      var tpl = '<a :href="link">My Link</a>'
+      var expected = '<a href="http://google.com">My Link</a>'
+      var template = new Template(tpl)
+      var result = template.parse({link: 'http://google.com'})
+      expect(result).toEqual(expected)
+    })
   })
 
-  it('should render node text', function () {
-    var template = new Template('Hello, {{variable}}!!!')
-    var result = template.parse({variable: 'World'})
-    expect(result).toEqual('Hello, World!!!')
+  describe(':style', function () {
+    it('should set `style` attribute to the object given', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-style.html', 'utf8')
+      var expected1 = fs.readFileSync(__dirname + '/fixtures/templates/directive-style.expected1.html', 'utf8')
+      var expected2 = fs.readFileSync(__dirname + '/fixtures/templates/directive-style.expected2.html', 'utf8')
+      var template = new Template(source)
+
+      var result1 = $(template.parse({fontSize: 16}))[0]
+      var result2 = $(template.parse({fontSize: 14}))[0]
+
+      expect(result1).toEqual($(expected1)[0])
+      expect(result2).toEqual($(expected2)[0])
+    })
   })
 
-  it('should render multiple elements', function () {
-    var tpl = '<div class="container">' +
-                '<strong class="name">Name: {{user.name}}</strong>' +
-                '<a href="mailto:{{user.email}}" class="email">E-mail: {{user.email}}</a>' +
-              '</div>'
-
-    var tplExpected = '<div class="container">' +
-                        '<strong class="name">Name: Guilherme</strong>' +
-                        '<a href="mailto:gui@email.com" class="email">E-mail: gui@email.com</a>' +
-                      '</div>'
-
-    var template = new Template(tpl)
-    var result = template.parse({user: {name: 'Guilherme', email: 'gui@email.com'}})
-    expect(result).toEqual(tplExpected)
-  })
-
-})
-
-describe('Template#directives', function () {
-
-  it('`:bind`', function () {
-    var tpl = '<div :bind="name" class="username"></div>'
-    var template = new Template(tpl)
-    var result = template.parse({name: 'Guilherme'})
-    expect(result).toEqual('<div class="username">Guilherme</div>')
-  })
-
-  it('`:show`', function () {
-    var tpl = '<div>' +
-                '<strong class="username">{{user.name}}</strong>' +
-                '<a href="mailto:{{user.email}}" :show="user.email">Contact</a>' +
-              '</div>'
-
-    var expected1 = '<div>' +
-                      '<strong class="username">John</strong>' +
-                      '<a href="mailto:john@gmail.com">Contact</a>' +
-                    '</div>'
-
-    var expected2 = '<div>' +
-                      '<strong class="username">John</strong>' +
-                    '</div>'
-
-    var template = new Template(tpl)
-    var result1 = template.parse({user: {name: 'John', email: 'john@gmail.com'}})
-    var result2 = template.parse({user: {name: 'John', email: ''}})
-
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-  })
-
-  it('`:hide`', function () {
-    var tpl = '<div>' +
-                '<strong class="username">{{user.name}}</strong>' +
-                '<a href="mailto:{{user.email}}" :hide="!user.email">Contact</a>' +
-              '</div>'
-
-    var expected1 = '<div>' +
-                      '<strong class="username">John</strong>' +
-                      '<a href="mailto:john@gmail.com">Contact</a>' +
-                    '</div>'
-
-    var expected2 = '<div>' +
-                      '<strong class="username">John</strong>' +
-                    '</div>'
-
-    var template = new Template(tpl)
-    var result1 = template.parse({user: {name: 'John', email: 'john@gmail.com'}})
-    var result2 = template.parse({user: {name: 'John', email: ''}})
-
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-  })
-
-  it('`:class`', function () {
-    var tpl = '<div class="container">' +
-                '<a href="/home" :class="{isActive: page.home}">Home</a>' +
-                '<a href="/about" :class="{isActive: page.about}">About</a>' +
-                '<a href="/contact" :class="{isActive: page.contact}">Contact</a>' +
-              '</div>'
-
-    var expected1 = '<div class="container">' +
-                      '<a href="/home" class="is-active">Home</a>' +
-                      '<a href="/about">About</a>' +
-                      '<a href="/contact">Contact</a>' +
-                    '</div>'
-
-    var expected2 = '<div class="container">' +
-                      '<a href="/home">Home</a>' +
-                      '<a href="/about">About</a>' +
-                      '<a href="/contact" class="is-active">Contact</a>' +
-                    '</div>'
-
-    var template = new Template(tpl)
-    var result1 = template.parse({page: {home: true}})
-    var result2 = template.parse({page: {contact: true}})
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-  })
-
-  it('`:class` with multiple classes', function () {
-    var tpl = '<div :class="{container: hasContainer, bgBlue: true}">' +
-                '<span :class="{textDanger: status !== \'success\', textSuccess: status === \'success\'}">{{message}}</span>' +
-              '</div>'
-
-    var expected1 = '<div class="container bg-blue">' +
-                      '<span class="text-danger">Error</span>' +
-                    '</div>'
-
-    var expected2 = '<div class="bg-blue">' +
-                      '<span class="text-success">Success</span>' +
-                    '</div>'
-
-    var template = new Template(tpl)
-    var result1 = template.parse({hasContainer: true, status: 'error', message: 'Error'})
-    var result2 = template.parse({hasContainer: false, status: 'success', message: 'Success'})
-
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-  })
-
-  it('`:disabled`', function () {
-    var tpl = '<form>' +
-                '<input type="text" placeholder="Name" name="name" :disabled="isDisabled">'
-              '</form>'
-
-    var expected1 = '<form>' +
-                      '<input type="text" placeholder="Name" name="name" disabled="disabled">' +
-                    '</form>'
-
-    var expected2 = '<form>' +
-                      '<input type="text" placeholder="Name" name="name">' +
-                    '</form>'
-
-    var template = new Template(tpl)
-    var result1 = template.parse({isDisabled: true})
-    var result2 = template.parse({isDisabled: false})
-
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-  })
-
-  it('`:selected`', function () {
-    var tpl = '<form>' +
-                '<select name="list">' +
-                  '<option value="1" :selected="option === 1">First Option</option>' +
-                  '<option value="2" :selected="option === 2">Second Option</option>' +
-                  '<option value="3" :selected="option === 3">Third Option</option>' +
-                '</select>' +
-              '</form>'
-
-    var expected1 = '<form>' +
-                      '<select name="list">' +
-                        '<option value="1" selected="selected">First Option</option>' +
-                        '<option value="2">Second Option</option>' +
-                        '<option value="3">Third Option</option>' +
-                      '</select>' +
-                    '</form>'
-
-    var expected2 = '<form>' +
-                      '<select name="list">' +
-                        '<option value="1">First Option</option>' +
-                        '<option value="2">Second Option</option>' +
-                        '<option value="3" selected="selected">Third Option</option>' +
-                      '</select>' +
-                    '</form>'
-
-    var template = new Template(tpl)
-    var result1 = template.parse({option: 1})
-    var result2 = template.parse({option: 3})
-
-    expect(result1).toEqual(expected1)
-    expect(result2).toEqual(expected2)
-  })
-
-  it('`:checked`', function () {
-    var tpl = '<form>' +
-                '<input type="checkbox" name="item1" :checked="true">' +
-                '<input type="checkbox" name="item2" :checked="false">' +
-                '<input type="checkbox" name="item3" :checked="2 === 2">' +
-                '<input type="checkbox" name="item4" :checked="isChecked">' +
-              '</form>'
-
-    var expected1 = '<form>' +
-                      '<input type="checkbox" name="item1" checked="checked">' +
-                      '<input type="checkbox" name="item2">' +
-                      '<input type="checkbox" name="item3" checked="checked">' +
-                      '<input type="checkbox" name="item4" checked="checked">' +
-                    '</form>'
-
-    var template = new Template(tpl)
-    var result = template.parse({isChecked: true})
-    expect(result).toEqual(expected1)
-  })
-
-  it('`:href`', function () {
-    var tpl = '<a :href="link">My Link</a>'
-    var expected = '<a href="http://google.com">My Link</a>'
-    var template = new Template(tpl)
-    var result = template.parse({link: 'http://google.com'})
-    expect(result).toEqual(expected)
-  })
-
-  it('`:style`', function () {
-    var tpl = '<div :style="{color: \'white\'}">' +
-                '<p :style="{backgroundColor: colors.blue, lineHeight: 1.5}">' +
-                  'Contents' +
-                '</p>' +
-              '</div>'
-
-    var expected = '<div style="color: white;">' +
-                      '<p style="background-color: rgb(0, 0, 139); line-height: 1.5;">' +
-                        'Contents' +
-                      '</p>' +
-                    '</div>'
-
-    var template = new Template(tpl)
-    var result = template.parse({colors: {blue: '#00008B'}})
-    expect(result).toEqual(expected)
-  })
-
-  it('`:repeat`', function () {
-    var tpl = '<ul>' +
-                '<li :repeat="item in items">' +
-                  '{{item}}' +
-                '</li>' +
-              '</ul>'
-
-    var expected = '<ul>' +
-                    '<li>Item 1</li>' +
-                    '<li>Item 2</li>' +
-                    '<li>Item 3</li>' +
-                  '</ul>'
-
-    var template = new Template(tpl)
-    var result = template.parse({items: ['Item 1', 'Item 2', 'Item 3']})
-    expect(result).toEqual(expected)
-  })
-
-  it('`:repeat` with arrays that contains objects', function () {
-    var tpl = '<ul>' +
-                '<li :repeat="user in users">' +
-                  '<strong class="username">{{ user.name }}</strong>' +
-                  '<a href="mailto:{{user.email}}">{{ user.email }}</a>' +
-                '</li>' +
-              '</ul>'
-
-    var expected = '<ul>' +
-                      '<li>' +
-                        '<strong class="username">Guilherme</strong>' +
-                        '<a href="mailto:gui@email.com">gui@email.com</a>' +
-                      '</li>' +
-                      '<li>' +
-                        '<strong class="username">Junin</strong>' +
-                        '<a href="mailto:junin@aforum.com">junin@aforum.com</a>' +
-                      '</li>' +
-                    '</ul>'
-
-    var template = new Template(tpl)
-    var users = [
-      {
-        name: 'Guilherme',
-        email: 'gui@email.com'
-      },
-      {
-        name: 'Junin',
-        email: 'junin@aforum.com'
-      }
-    ]
-    var result = template.parse({users: users})
-
-    expect(result).toEqual(expected)
-  })
-
-  it('nested `:repeat`s', function () {
-    var tpl = '<ul class="users">' +
-                '<li :repeat="user in users">' +
-                  'User {{$index}}: {{user.name}}' +
-                  '<ul class="languages">' +
-                    '<li :repeat="language in user.languages">{{$index + 1}}: {{language}}</li>' +
-                  '</ul>' +
-                '</li>' +
-              '</ul>'
-
-    var expected = '<ul class="users">' +
-                      '<li>' +
-                        'User 0: Guilherme' +
-                        '<ul class="languages">' +
-                          '<li>1: Portuguese</li>' +
-                          '<li>2: English</li>' +
-                        '</ul>' +
-                      '</li>' +
-                      '<li>' +
-                        'User 1: Zillozo' +
-                        '<ul class="languages">' +
-                          '<li>1: English</li>' +
-                          '<li>2: Spanish</li>' +
-                        '</ul>' +
-                      '</li>' +
-                    '</ul>'
-
-    var template = new Template(tpl)
-    var users = [
-      {
-        name: 'Guilherme',
-        languages: ['Portuguese', 'English']
-      },
-      {
-        name: 'Zillozo',
-        languages: ['English', 'Spanish']
-      }
-    ]
-
-    var result = template.parse({users: users})
-    expect(result).toEqual(expected)
-  })
-
-  it('`:repeat` with objects', function () {
-    var tpl = '<div>' +
-                '<strong>LIST:</strong>' +
-                '<a href="{{user}}" :repeat="user in users">' +
-                  '<span>{{$index}}</span>' +
-                  '<span>{{$key}}: {{user}}</span>' +
-                '</a>' +
-              '</div>'
-
-    var expected = '<div>' +
-                      '<strong>LIST:</strong>' +
-                      '<a href="guilherme@email.com">' +
-                        '<span>0</span>' +
-                        '<span>Guilherme: guilherme@email.com</span>' +
-                      '</a>' +
-                      '<a href="juninzoto@email.com">' +
-                        '<span>1</span>' +
-                        '<span>Junin: juninzoto@email.com</span>' +
-                      '</a>' +
-                   '</div>'
-
-    var template = new Template(tpl)
-    var users = {
-      Guilherme: 'guilherme@email.com',
-      Junin: 'juninzoto@email.com'
-    }
-    var result = template.parse({users: users})
-    expect(result).toEqual(expected)
-  })
-
-  it('`:repeat` with directives', function () {
-    var tpl = '<ul>' +
-                '<li :repeat="user in users">' +
-                  '<span>Nº: {{$index + 1}}</span>' +
-                  '<strong :bind="user.name"></strong>' +
-                  '<a href="mailto:{{user.email}}" :show="user.email">Send email</a>' +
-                '</li>' +
-              '</ul>'
-
-    var expected = '<ul>' +
-                    '<li>' +
-                      '<span>Nº: 1</span>' +
-                      '<strong>Guilherme Santiago</strong>' +
-                      '<a href="mailto:guilherme@email.com">Send email</a>' +
-                    '</li>' +
-                    '<li>' +
-                      '<span>Nº: 2</span>' +
-                      '<strong>Tony Stark</strong>' +
-                    '</li>' +
-                  '</ul>'
-
-    var template = new Template(tpl)
-    var users = [
-      {
-        name: 'Guilherme Santiago',
-        email: 'guilherme@email.com'
-      },
-      {
-        name: 'Tony Stark'
-      }
-    ]
-    var result = template.parse({users: users})
-    expect(result).toEqual(expected)
-  })
-
-  it('`:repeat` should expose special variables', function () {
-    var tpl = '<div>' +
-                '$index: {{$index}}\n' +
-                '$key: {{$key}}\n' +
-                '$total: {{$total}}\n' +
-                '$odd: {{$odd}}\n' +
-                '$even: {{$even}}\n' +
-                '$middle: {{$middle}}\n' +
-                '$first: {{$first}}\n' +
-                '$last: {{$last}}\n' +
-                'user: {{user}}\n' +
-                '<div :repeat="user in users">\n' +
-                  '$index: {{$index}}\n' +
-                  '$key: {{$key}}\n' +
-                  '$total: {{$total}}\n' +
-                  '$odd: {{$odd}}\n' +
-                  '$even: {{$even}}\n' +
-                  '$middle: {{$middle}}\n' +
-                  '$first: {{$first}}\n' +
-                  '$last: {{$last}}\n' +
-                  'user: {{user}}\n' +
-                '</div>' +
-                '$index: {{$index}}\n' +
-                '$key: {{$key}}\n' +
-                '$total: {{$total}}\n' +
-                '$odd: {{$odd}}\n' +
-                '$even: {{$even}}\n' +
-                '$middle: {{$middle}}\n' +
-                '$first: {{$first}}\n' +
-                '$last: {{$last}}\n' +
-                'user: {{user}}\n' +
-              '</div>'
-
-    var expected = '<div>' +
-                      '$index: go index\n' +
-                      '$key: k3y\n' +
-                      '$total: 999\n' +
-                      '$odd: yeah\n' +
-                      '$even: nope\n' +
-                      '$middle: what\n' +
-                      '$first: hein\n' +
-                      '$last: wow\n' +
-                      'user: dafuq\n' +
-                      '<div>\n' +
-                        '$index: 0\n' +
-                        '$key: 0\n' +
-                        '$total: 3\n' +
-                        '$odd: false\n' +
-                        '$even: true\n' +
-                        '$middle: false\n' +
-                        '$first: true\n' +
-                        '$last: false\n' +
-                        'user: Guilherme\n' +
-                      '</div>' +
-                      '<div>\n' +
-                        '$index: 1\n' +
-                        '$key: 1\n' +
-                        '$total: 3\n' +
-                        '$odd: true\n' +
-                        '$even: false\n' +
-                        '$middle: true\n' +
-                        '$first: false\n' +
-                        '$last: false\n' +
-                        'user: Junin\n' +
-                      '</div>' +
-                      '<div>\n' +
-                        '$index: 2\n' +
-                        '$key: 2\n' +
-                        '$total: 3\n' +
-                        '$odd: false\n' +
-                        '$even: true\n' +
-                        '$middle: false\n' +
-                        '$first: false\n' +
-                        '$last: true\n' +
-                        'user: Zillaum\n' +
-                      '</div>' +
-                      '$index: go index\n' +
-                      '$key: k3y\n' +
-                      '$total: 999\n' +
-                      '$odd: yeah\n' +
-                      '$even: nope\n' +
-                      '$middle: what\n' +
-                      '$first: hein\n' +
-                      '$last: wow\n' +
-                      'user: dafuq\n' +
-                    '</div>'
-
-    var template = new Template(tpl)
-    var initialContext = {
-      $index: 'go index',
-      $key: 'k3y',
-      $total: 999,
-      $odd: 'yeah',
-      $even: 'nope',
-      $middle: 'what',
-      $first: 'hein',
-      $last: 'wow',
-      user: 'dafuq',
-      users: ['Guilherme', 'Junin', 'Zillaum']
-    }
-    var result = template.parse(initialContext)
-
-    expect(result).toEqual(expected)
-  })
-
-})
-
-describe('Template#addDirective', function () {
-
-  it('should add a new directive', function () {
-    Template.addDirective('uppercase', function ($el, value, props) {
-      if (this.compile(value)) $el.text($el.text().toUpperCase())
+  describe(':repeat', function () {
+    it('should iterate array', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/iterate-array.html', 'utf8')
+      var expected = fs.readFileSync(__dirname + '/fixtures/templates/iterate-array.expected.html', 'utf8')
+      var template = new Template(source)
+      var result = template.parse({items: ['Banana', 'Orange', 'Apple', 'Pear']})
+
+      expect($(result)[0]).toEqual($(expected)[0])
     })
 
-    var tpl = '<div :uppercase="true">test</div>'
-    var expected = '<div>TEST</div>'
+    it('should iterate object', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/iterate-object.html', 'utf8')
+      var expected = fs.readFileSync(__dirname + '/fixtures/templates/iterate-object.expected.html', 'utf8')
+      var template = new Template(source)
+      var result = template.parse({users: {
+        Guilherme: 'guilherme@email.com',
+        Junin: 'junin@email.com',
+        Zillao: 'zillao@email.com'
+      }})
 
-    var template = new Template(tpl)
-    var result = template.parse()
-    expect(result).toEqual(expected)
+      expect($(result)[0]).toEqual($(expected)[0])
+    })
+
+    it('should add special properties to each loop', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/special-properties.html', 'utf8')
+      var expected = fs.readFileSync(__dirname + '/fixtures/templates/special-properties.expected.html', 'utf8')
+      var template = new Template(source)
+      var result = template.parse({
+        user: 'Initial user',
+        $index: 'Initial index',
+        $key: 'Initial key',
+        $total: 'Initial total',
+        $first: 'Initial first',
+        $middle: 'Initial middle',
+        $last: 'Initial last',
+        $even: 'Initial even',
+        $odd: 'Initial odd',
+        users: ['Guilherme', 'Junin', 'Zilla']
+      })
+
+      expect($(result)[0]).toEqual($(expected)[0])
+    })
+
+    it('should support nested :repeat', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/nested-repeat.html', 'utf8')
+      var expected = fs.readFileSync(__dirname + '/fixtures/templates/nested-repeat.expected.html', 'utf8')
+      var template = new Template(source)
+      var result = template.parse({
+        users: [
+          {
+            name: 'Guilherme',
+            skills: ['html', 'css', 'js']
+          },
+          {
+            name: 'Zilla',
+            skills: ['php', 'mysql']
+          },
+          {
+            name: 'Junin',
+            skills: []
+          }
+        ]
+      })
+
+      expect(result).toEqual(expected)
+    })
+
+    it('should support other directives', function () {
+      var source = fs.readFileSync(__dirname + '/fixtures/templates/repeat-with-directives.html', 'utf8')
+      var expected = fs.readFileSync(__dirname + '/fixtures/templates/repeat-with-directives.expected.html', 'utf8')
+      var template = new Template(source)
+      var result = template.parse({
+        users: [
+          {
+            name: 'Guilherme',
+            email: 'guilherme@email.com'
+          },
+          {
+            name: 'Zilla'
+          },
+          {
+            name: 'Junin',
+            email: 'junin@email.com'
+          }
+        ]
+      })
+
+      expect($(result)[0]).toEqual($(expected)[0])
+    })
   })
 
 })

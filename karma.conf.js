@@ -15,7 +15,7 @@ module.exports = function(config) {
 
     // list of files / patterns to load in the browser
     files: [
-      'test/**/*.js'
+      'test/**/*.test.js'
     ],
 
 
@@ -27,13 +27,14 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/**/*.js': ['browserify']
+      'test/**/*.test.js': ['browserify']
     },
 
     // browserify config.
     // https://github.com/nikku/karma-browserify
     browserify: {
-      debug: true
+      debug: true,
+      transform: ['brfs']
     },
 
     // test results reporter to use
