@@ -163,7 +163,7 @@ fn.parse = function (obj) {
     self.applyDirectives($this)
   })
 
-  return this.supplant($holder.html())
+  return this.supplant($holder.html()).replace(/^\s*[\r\n]/gm, '')
 }
 
 /**
