@@ -56,10 +56,10 @@ Template.directives = {
 
     var references = {}
 
-    references[needle] = self.context[needle]
+    references[needle] = self.vars[needle]
 
     $.each(specials, function (index, prop) {
-      references[prop] = self.context[prop]
+      references[prop] = self.vars[prop]
     })
 
     var $holder = $('<div>')
@@ -71,9 +71,9 @@ Template.directives = {
     $.each(collection, function (key, val) {
       var $item = $clone.clone()
       var $itemHolder = $('<div>').append($item)
-      self.context[needle] = val
+      self.vars[needle] = val
 
-      $.extend(self.context, {
+      $.extend(self.vars, {
         $index: counter,
         $key: key,
         $total: total,
@@ -84,11 +84,8 @@ Template.directives = {
         $middle: counter > 0 && counter < (total - 1)
       })
 
-      self.context.$index = counter
-      self.context.$key = key
-
       template.setSource($itemHolder.html())
-      template.context = self.context
+      template.vars = self.vars
       $itemHolder.html(template.parse())
       $item = $($itemHolder.html())
       $item.appendTo($holder)
@@ -97,7 +94,7 @@ Template.directives = {
 
     $el.replaceWith($holder.html())
 
-    $.extend(self.context, references)
+    $.extend(self.vars, references)
   }
 }
 
@@ -127,6 +124,7 @@ function Template (source) {
   source = source || ''
   this.source = source.trim()
   this.context = {}
+  this.vars = {}
 }
 
 /**
@@ -148,11 +146,13 @@ fn.setSource = function (source) {
 /**
  * Parse the source with the given object.
  * @method
- * @param {Object} obj
+ * @param {Object} vars
+ * @param {Object} context
  */
 
-fn.parse = function (obj) {
-  if (obj) this.context = obj
+fn.parse = function (vars, context) {
+  if (vars) this.vars = vars
+  if (context) this.context = context
 
   var self = this
   var $source = $($.parseHTML(this.source))
@@ -171,13 +171,14 @@ fn.parse = function (obj) {
 /**
  * Compile a JS expression.
  * @method
- * @param {Object} additional context
+ * @param {Object} context
  */
 
-fn.compile = function (expr, obj) {
-  var context = this.context
-  var keys = Object.keys(context)
-  var values = $.map(context, function (val, key) {
+fn.compile = function (expr, context) {
+  context = context || this.context
+  var vars = this.vars
+  var keys = Object.keys(vars)
+  var values = $.map(vars, function (val, key) {
     if ($.isArray(val)) return [val]
     return val
   })
@@ -185,7 +186,7 @@ fn.compile = function (expr, obj) {
   var ret = ''
 
   try {
-    ret = fn.apply(this, values)
+    ret = fn.apply(context, values)
   } catch (e) {
     console.error(e)
   }

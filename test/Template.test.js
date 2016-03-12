@@ -36,7 +36,7 @@ describe('The method', function () {
     })
 
     it('should replace the `name` variable', function () {
-      this.template.context = {
+      this.template.vars = {
         name: 'Guilherme'
       }
 
@@ -45,7 +45,7 @@ describe('The method', function () {
     })
 
     it('should solve operations and concatenations', function () {
-      this.template.context = {
+      this.template.vars = {
         name: 'Guilherme',
         lastname: 'Santiago',
         age: 20
@@ -87,7 +87,7 @@ describe('The method', function () {
     })
 
     it('should return full name', function () {
-      this.template.context = {
+      this.template.vars = {
         name: 'Guilherme',
         lastname: 'Santiago'
       }
@@ -97,20 +97,20 @@ describe('The method', function () {
     })
 
     it('should escape strings by default', function () {
-      this.template.context.str = 'You & I aren\'t <"GREAT">'
+      this.template.vars.str = 'You & I aren\'t <"GREAT">'
       var expected = 'You &amp; I aren&#x27;t &lt;&quot;GREAT&quot;&gt;'
       var result = this.template.supplant('{{str}}')
       expect(result).toEqual(expected)
     })
 
     it('should return unescaped strings when `{% %}` delimiters are used', function () {
-      var expected = this.template.context.str = 'You & I aren\'t <"GREAT">'
+      var expected = this.template.vars.str = 'You & I aren\'t <"GREAT">'
       var result = this.template.supplant('{% str %}')
       expect(result).toEqual(expected)
     })
 
     it('should call a function', function (done) {
-      this.template.context = {
+      this.template.vars = {
         myFunc: function () {
           done()
         }
