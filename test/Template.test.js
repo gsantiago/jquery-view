@@ -169,7 +169,7 @@ describe('The method', function () {
       var expected = '<div>HELLO</div>'
       var result = template.parse()
 
-      expect(result).toEqual(result)
+      expect(result).toEqual(expected)
     })
 
   })
