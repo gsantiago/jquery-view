@@ -287,6 +287,40 @@ describe('The directive', function () {
     })
   })
 
+  describe(':src', function () {
+    it('should set `src` attribute to the expression given', function () {
+      var tpl = '<img :src="myImage">'
+      var expected = '<img src="path/to/logo.svg">'
+      var template = new Template(tpl)
+      var result = template.parse({myImage: 'path/to/logo.svg'})
+      expect($(result)[0]).toEqual($(expected)[0])
+    })
+  })
+
+  describe(':value', function () {
+    it('should set `value` attribute to the expression given', function () {
+      var tpl = '<input type="text" :value="name">'
+      var expected = '<input type="text" value="Guilherme Santiago">'
+      var template = new Template(tpl)
+      var result = template.parse({name: 'Guilherme Santiago'})
+      expect($(result)[0]).toEqual($(expected)[0])
+    })
+  })
+
+  describe(':title and :alt', function () {
+    it('should set `title` and `alt` attributes to the expression given to them', function () {
+      var tpl = '<img src="{{img.url}}" :title="img.title" :alt="img.description">'
+      var expected = '<img src="foo/bar/image.png" title="Image Title" alt="Image Description">'
+      var template = new Template(tpl)
+      var result = template.parse({img: {
+        url: 'foo/bar/image.png',
+        title: 'Image Title',
+        description: 'Image Description'
+      }})
+      expect($(result)[0]).toEqual($(expected)[0])
+    })
+  })
+
   describe(':style', function () {
     it('should set `style` attribute to the object given', function () {
       var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-style.html', 'utf8')

@@ -38,10 +38,6 @@ Template.directives = {
     })
   },
 
-  href: function ($el, value, props) {
-    $el.attr('href', this.compile(value))
-  },
-
   style: function ($el, value, props) {
     $el.css(this.compile(value))
   },
@@ -112,6 +108,12 @@ $.each(['selected', 'checked', 'disabled'], function (index, dir) {
     } else {
       $el.removeAttr(dir)
     }
+  }
+})
+
+$.each(['href', 'src', 'value', 'title', 'alt'], function (index, dir) {
+  Template.directives[dir] = function ($el, value, props) {
+    $el.attr(dir, this.compile(value))
   }
 })
 
