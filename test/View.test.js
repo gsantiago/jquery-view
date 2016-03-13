@@ -39,6 +39,26 @@ describe('View#constructor', function () {
     expect(view._state).toEqual(state)
   })
 
+  it('should implement custom methods', function (done) {
+    var view = new View($('<div>'), {
+      state: {a: 100},
+      templateUrl: 'index.html',
+      init: function () {
+        return this
+      },
+      finish: function () {
+        done()
+      }
+    })
+
+    expect(view.state).toBeUndefined()
+    expect(view.template).toBeUndefined()
+    expect(view.templateUrl).toBeUndefined()
+    expect($.isFunction(view.init)).toBeTruthy()
+
+    view.finish()
+  })
+
 })
 
 describe('View#getState', function () {

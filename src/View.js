@@ -23,7 +23,9 @@ module.exports = View
  */
 
 View.defaults = {
-  state: {}
+  state: {},
+  template: '',
+  templateUrl: ''
 }
 
 /**
@@ -34,9 +36,15 @@ View.defaults = {
  */
 
 function View ($el, options) {
+  var self = this
   this.$el = $el
   this._options = $.extend({}, View.defaults, options)
   this._getInitialState()
+
+  $.each(this._options, function (key, option) {
+    if (Object.keys(View.defaults).indexOf(key) !== -1) return
+    self[key] = option
+  })
 }
 
 /**
@@ -62,7 +70,6 @@ fn._getInitialState = function () {
   this._state = $.isFunction(state)
     ? state()
     : state
-  delete this._options.state
 }
 
 /**
