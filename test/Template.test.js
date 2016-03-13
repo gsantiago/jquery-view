@@ -72,6 +72,23 @@ describe('The method', function () {
       expect(result).toEqual(expected)
     })
 
+    it('should suppor contexts for `this` keyword', function (done) {
+      this.template.context = {
+        myFunc: function () {
+          done()
+          return 0
+        },
+        a: 10
+      }
+
+      this.template.vars = {
+        b: 5
+      }
+
+      var result = this.template.compile('this.myFunc() + this.a  + b')
+      expect(result).toEqual(15)
+    })
+
   })
 
 
