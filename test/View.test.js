@@ -79,14 +79,14 @@ describe('View#constructor', function () {
     })
 
     expect(view._templateSource).toEqual(tpl)
-    expect(view.$el.html()).toEqual('My Beautiful Content!')
+    expect(view.$el.prop('outerHTML')).toEqual('<p>My Beautiful Content!</p>')
   })
 
   it('should support external templates', function (done) {
     jasmine.Ajax.install()
 
-    var tpl = '<div><p>Welcome, <strong :bind="name"></strong></p></div>'
-    var expected = '<p>Welcome, <strong>Guilherme</strong></p>'
+    var tpl = '<p>Welcome, <strong :bind="name"></strong></p>'
+    var expected = '<div><p>Welcome, <strong>Guilherme</strong></p></div>'
 
     jasmine.Ajax.stubRequest('/templates/my-element.html').andReturn({
       responseText: tpl,
@@ -98,9 +98,9 @@ describe('View#constructor', function () {
       state: {name: 'Guilherme'},
       templateUrl: '/templates/my-element.html',
       init: function () {
-        expect(this._templateSource).toEqual(tpl)
+        expect(this._templateSource).toEqual('<div><p>Welcome, <strong :bind="name"></strong></p></div>')
         this.on('ready', function ($el) {
-          expect($el.html()).toEqual(expected)
+          expect($el.prop('outerHTML')).toEqual(expected)
           done()
         })
       }
@@ -149,35 +149,6 @@ describe('View#setState', function () {
 })
 
 describe('View rendering', function () {
-
-  it('should replace current $el', function (done) {
-    var tpl = '<div :class="{container: true}"><p>{{ content }}</p></div>'
-    var spy = jasmine.createSpy()
-
-    var view1 = new View($(tpl), {
-      state: {content: 'Hello'},
-      init: function () {
-        this.on('after render', function ($el) {
-          spy()
-          var html = $('<div>').append($el).html()
-          expect(html).toEqual('<div class="container"><p>Hello</p></div>')
-        })
-      }
-    })
-
-    var view2 = new View($(tpl), {
-      replace: false,
-      state: {content: 'Hello Two'},
-      init: function () {
-        this.on('after render', function ($el) {
-          expect(spy).toHaveBeenCalled()
-          var html = $('<div>').append($el).html()
-          expect(html).toEqual('<div :class="{container: true}"><p>Hello Two</p></div>')
-          done()
-        })
-      }
-    })
-  })
 
   it('should trigger `before render` and `after render` callbacks', function (done) {
     var beforeRenderSpy = jasmine.createSpy()

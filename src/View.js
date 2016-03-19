@@ -27,7 +27,6 @@ View.defaults = {
   state: {},
   template: '',
   templateUrl: '',
-  replace: true,
   beforeRender: $.noop,
   afterRender: $.noop
 }
@@ -134,9 +133,7 @@ fn._getTemplate = function () {
   if (options.template) {
     deferred.resolve(options.template)
   } else {
-    var source = options.replace
-     ? $('<div>').append($el.clone()).html()
-     : $el.html()
+    var source = $el.prop('outerHTML')
     deferred.resolve(source)
   }
 
@@ -151,6 +148,7 @@ fn._getTemplate = function () {
  */
 
 fn._getExternalTemplate = function () {
+  var self = this
   var url = this._options.templateUrl
   var deferred = $.Deferred()
 
@@ -160,6 +158,8 @@ fn._getExternalTemplate = function () {
     $.get(url)
       .done(function (response) {
         cache[url] = response
+        self.$el.html(response)
+        response = self.$el.prop('outerHTML')
         deferred.resolve(response)
       })
       .fail(deferred.reject)
@@ -184,14 +184,11 @@ fn._render = function () {
   this.emit('before render', $el, currentState)
 
   var html = template.parse(currentState, this)
+  var $newEl = $(html)
 
-  if (this._options.replace) {
-    var $newEl = $(html)
-    $el.replaceWith($newEl)
-    this.$el = $el = $newEl
-  } else {
-    $el.html(html)
-  }
+  $el.replaceWith($newEl)
+
+  this.$el = $el = $newEl
 
   this.emit('after render', $el, currentState)
 }
