@@ -6,6 +6,7 @@ var $ = require('jquery')
 var EventEmitter = require('events').EventEmitter
 var inherits = require('util').inherits
 var Template = require('./Template')
+var utils = require('./utils')
 
 /**
  * Expose `View`.
@@ -49,6 +50,8 @@ function View ($el, options) {
     if (Object.keys(View.defaults).indexOf(key) !== -1) return
     self[key] = option
   })
+
+  this.props = utils.getProps($el)
 
   this._getTemplate()
     .done(function (template) {

@@ -109,6 +109,19 @@ describe('View#constructor', function () {
     jasmine.Ajax.uninstall()
   })
 
+  it('should get element\'s props', function () {
+    var $el = $('<user name="Guilherme" last-name="Santiago">{{this.props.name}} {{this.props.lastName}}</user>')
+    var expected = '<user name="Guilherme" last-name="Santiago">Guilherme Santiago</user>'
+    var view = new View($el, {
+
+    })
+    expect(view.$el.prop('outerHTML')).toEqual(expected)
+    expect(view.props).toEqual({
+      name: 'Guilherme',
+      lastName: 'Santiago'
+    })
+  })
+
 })
 
 describe('View#getState', function () {
