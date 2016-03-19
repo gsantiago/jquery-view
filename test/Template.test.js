@@ -442,6 +442,14 @@ describe('The directive', function () {
 
       expect($(result)[0]).toEqual($(expected)[0])
     })
+
+    it('should not leak scope', function () {
+      var tpl = '<div :repeat="item in items">{{ item }}</div>'
+      var vars = {items: ['a', 'b', 'c']}
+      var template = new Template(tpl)
+      template.parse($.extend({}, vars))
+      expect(template.vars).toEqual(vars)
+    })
   })
 
 })

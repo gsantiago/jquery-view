@@ -44,36 +44,37 @@ Template.directives = {
 
   repeat: function ($el, value, props) {
     var self = this
+
     var match = value.match(/(.*)\S*in\S*(.*)/)
+    if (!match) throw new Error('Invalid Syntax for :repeat')
+
     var needle = match[1].trim()
-    var collection = this.compile(match[2])
-    var $clone = $el.clone().removeAttr(':repeat')
+    var haystack = this.compile(match[2].trim())
+
+    // Make sure the haystack is a collection
+    if (!($.isArray(haystack) || $.isPlainObject(haystack))) {
+      throw new Error('Haystack `' + match[2].trim() + '` must be a collection')
+    }
+
+    // Make sure the haystack has at least one value
+    var total = $.isArray(haystack)
+      ? haystack.length
+      : Object.keys(haystack).length
+
+    if (!total) return $el.remove()
+
+    // Start the loop
+    $el.removeAttr(':repeat')
+
     var template = new Template()
-
-    var specials = [
-      '$index', '$key', '$total', '$first', '$last', '$middle', '$even', '$odd'
-    ]
-
-    var references = {}
-
-    references[needle] = self.vars[needle]
-
-    $.each(specials, function (index, prop) {
-      references[prop] = self.vars[prop]
-    })
-
-    var $holder = $('<div>')
+    var $collection = $('<div>')
     var counter = 0
-    var total = $.isArray(collection)
-      ? collection.length
-      : Object.keys(collection).length
 
-    $.each(collection, function (key, val) {
-      var $item = $clone.clone()
-      var $itemHolder = $('<div>').append($item)
-      self.vars[needle] = val
+    $.each(haystack, function (key, val) {
+      template.setSource($el.prop('outerHTML'))
+      template.context = self.context
 
-      $.extend(self.vars, {
+      template.vars = $.extend(template.vars, self.vars, {
         $index: counter,
         $key: key,
         $total: total,
@@ -84,18 +85,17 @@ Template.directives = {
         $middle: counter > 0 && counter < (total - 1)
       })
 
-      template.setSource($itemHolder.html())
-      template.vars = self.vars
-      $itemHolder.html(template.parse())
-      $item = $($itemHolder.html())
-      $item.appendTo($holder)
+      template.vars[needle] = val
+
+      $collection.append(template.parse())
+
       counter += 1
     })
 
-    $el.replaceWith($holder.html())
-
-    $.extend(self.vars, references)
+    $el.replaceWith($collection.html())
+    $el.data('removed', true)
   }
+
 }
 
 $.each(['selected', 'checked', 'disabled'], function (index, dir) {
@@ -162,6 +162,7 @@ fn.parse = function (vars, context) {
 
   $holder.find('*').each(function () {
     var $this = $(this)
+    if (!$this.parents().last().is($holder)) return
     self.applyDirectives($this)
   })
 
@@ -188,7 +189,7 @@ fn.compile = function (expr, context) {
   try {
     ret = fn.apply(context, values)
   } catch (e) {
-    console.error(e)
+    console.error('Compile error:', e)
   }
 
   return ret
