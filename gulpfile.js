@@ -4,6 +4,7 @@
 
 var gulp = require('gulp')
 var browserify = require('browserify')
+var dependify = require('dependify')
 var source = require('vinyl-source-stream')
 var buffer = require('vinyl-buffer')
 var uglify = require('gulp-uglify')
@@ -21,6 +22,11 @@ gulp.task('browserify', function () {
   var b = browserify({
     entries: './jquery-view.js',
     debug: true
+  }).plugin(dependify, {
+    name: 'View',
+    deps: {
+      jquery: 'jQuery'
+    }
   })
 
   return b.bundle()
