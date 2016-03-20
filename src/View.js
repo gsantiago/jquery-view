@@ -240,7 +240,6 @@ fn._walkEventsHash = function (cb) {
         cb.call(self, selector, listener, eventListener)
       })
     })
-
   })
 }
 
