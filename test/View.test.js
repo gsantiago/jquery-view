@@ -6,6 +6,7 @@
 
 var $ = require('jquery')
 var View = require('../src/View')
+var fs = require('fs')
 require('jasmine-ajax')
 
 describe('View#constructor', function () {
@@ -199,6 +200,47 @@ describe('View rendering', function () {
         })
       }
     })
+  })
+
+})
+
+describe('View events', function () {
+
+  it('should add listeners to elements', function (done) {
+    var source = fs.readFileSync(__dirname + '/fixtures/views/view-events-hash.html', 'utf8')
+    var $div = $(source)
+
+    var editSpy = jasmine.createSpy()
+    var changeSpy = jasmine.createSpy()
+
+    var view = new View($div, {
+      events: {
+        'submit': 'submitHandler',
+        'click,dblclick .js-edit': 'editHandler',
+        'change [name="my-input"]': 'changeHandler'
+      },
+
+      submitHandler: function ($el, event) {
+        event.preventDefault()
+        done()
+      },
+
+      editHandler: function ($el, event) {
+        editSpy()
+      },
+
+      changeHandler: function ($el, event) {
+        changeSpy()
+      }
+    })
+
+    view.$el.find('.js-edit').trigger('click').trigger('dblclick')
+    expect(editSpy.calls.count()).toEqual(2)
+
+    view.$el.find('[name="my-input"]').trigger('change')
+    expect(changeSpy.calls.count()).toEqual(1)
+
+    view.$el.find('form').submit()
   })
 
 })
