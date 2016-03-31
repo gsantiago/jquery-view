@@ -99,7 +99,6 @@ directives.repeat = function ($el, value, props) {
   })
 
   $el.replaceWith($collection.html())
-  $el.data('removed', true)
 }
 
 /**
