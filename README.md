@@ -1,4 +1,4 @@
-# jquery-view
+# jQuery View
 
 [![Build Status](https://travis-ci.org/gsantiago/jquery-view.svg?branch=master)](https://travis-ci.org/gsantiago/jquery-view)
 [![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg?gsantiago)](https://codeclimate.com/github/gsantiago/jquery-view)
@@ -7,7 +7,37 @@
 
 ## Introduction
 
-TODO
+jQuery View provides you a simple way to create Views and enhance your HTML.
+
+You can use it like a jQuery plugin:
+
+```js
+$('.my-view').view({
+  state: {
+    users: ['John', 'Peter', 'Mark'],
+    clickCount: 0
+  },
+  clickHandler: function () {
+    var count = this.getState().clickCount += 1
+    this.setState({clickCount: count})
+  }
+})
+```
+
+And enjoy its simple DOM-based template:
+
+```html
+<div class="my-view">
+  <ul>
+    <li :repeat="user in users">
+      {{user}}
+    </li>
+  </ul>
+  <button :click="this.clickHandler($event, $target)">
+    You clicked {{count}} times.
+  </button>
+</div>
+```
 
 ## Installation
 
