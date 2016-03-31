@@ -1,0 +1,5 @@
+<form action="test/" :submit="this.submitHandler($event)">
+  <a :click="this.clickHandler()">Button</a>
+  <input type="text" name="name" :change="this.changeHandler($target, $event)">
+  <button type="submit">Submit</button>
+</form>

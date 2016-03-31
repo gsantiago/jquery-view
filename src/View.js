@@ -53,6 +53,7 @@ function View ($el, options) {
   })
 
   this.props = utils.getProps($el)
+  this._directiveEvents = []
 
   this._getTemplate()
     .done(function (template) {
@@ -187,12 +188,32 @@ fn._render = function () {
 
   this.emit('before render', $el, currentState)
 
+  // Clear events
+  $.each(this._directiveEvents, function (index, event) {
+    var selector = '[data-view-event-listener="' + index + '"]'
+    $el
+      .filter(selector)
+      .add($el.find(selector))
+      .off(event.type)
+  })
+
+  this._directiveEvents = []
+
   var html = template.parse(currentState, this)
   var $newEl = $(html)
 
   $el.replaceWith($newEl)
 
   this.$el = $el = $newEl
+
+  // Bind events
+  $.each(this._directiveEvents, function (index, event) {
+    var selector = '[data-view-event-listener="' + index + '"]'
+    $el
+      .filter(selector)
+      .add($el.find(selector))
+      .on(event.type, event.callback)
+  })
 
   this.emit('after render', $el, currentState)
 }

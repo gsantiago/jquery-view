@@ -125,3 +125,52 @@ $.each(['href', 'src', 'value', 'title', 'alt'], function (index, dir) {
     $el.attr(dir, this.compile(value))
   }
 })
+
+/**
+ * Directives for events.
+ */
+
+var events = [
+  // Mouse events
+  'click', 'dbclick', 'hover', 'contextmenu', 'mousedown', 'mouseenter',
+  'mouseleave', 'mousemove', 'mouseout', 'mouseup', 'toggle',
+
+  // Keyboard events
+  'keydown', 'keypress', 'keyup',
+
+  // Form events
+  'blur', 'change', 'focus', 'focusin', 'focusout', 'select', 'submit',
+
+  // Document loading events
+  'load'
+]
+
+$.each(events, function (index, eventName) {
+  directives[eventName] = function ($el, value, props) {
+    registerEvent.call(this, $el, eventName, value)
+  }
+})
+
+function registerEvent ($el, eventName, expression) {
+  var self = this
+  var view = this.context
+
+  var template = new self.Template()
+  template.context = self.context
+  template.vars = $.extend({}, self.vars)
+
+  var fn = function eventListener (event) {
+    $.extend(template.vars, {
+      $target: $(event.target),
+      $event: event
+    })
+    template.compile(expression)
+  }
+
+  view._directiveEvents.push({
+    type: eventName,
+    callback: fn
+  })
+
+  $el.attr('data-view-event-listener', view._directiveEvents.length - 1)
+}

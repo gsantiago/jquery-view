@@ -116,7 +116,7 @@ describe('View#constructor', function () {
     var view = new View($el, {
 
     })
-    expect(view.$el.prop('outerHTML')).toEqual(expected)
+    expect(view.$el[0]).toEqual($(expected)[0])
     expect(view.props).toEqual({
       name: 'Guilherme',
       lastName: 'Santiago'
@@ -206,7 +206,7 @@ describe('View rendering', function () {
 
 describe('View events', function () {
 
-  it('should add listeners to elements', function (done) {
+  it('should add listeners to elements with event hash', function (done) {
     var source = fs.readFileSync(__dirname + '/fixtures/views/view-events-hash.html', 'utf8')
     var $div = $(source)
 
@@ -240,7 +240,46 @@ describe('View events', function () {
     view.$el.find('[name="my-input"]').trigger('change')
     expect(changeSpy.calls.count()).toEqual(1)
 
-    view.$el.find('form').submit()
+    view.$el.trigger('submit')
+  })
+
+  it('should add event listeners with directives', function (done) {
+    var source = fs.readFileSync(__dirname + '/fixtures/views/view-events-directive.html', 'utf8')
+    var $div = $(source).appendTo('body')
+
+    var changeHandlerSpy = jasmine.createSpy()
+    var clickHandlerSpy = jasmine.createSpy()
+    var submitHandlerSpy = jasmine.createSpy()
+
+    var view = new View($div, {
+      submitHandler: function (e) {
+        e.preventDefault()
+        submitHandlerSpy()
+      },
+
+      changeHandler: function ($target) {
+        expect($target.is(this.$el.find('input'))).toBeTruthy()
+        changeHandlerSpy()
+      },
+
+      clickHandler: function () {
+        clickHandlerSpy()
+      }
+    })
+
+    setTimeout(function () {
+      view.$el.find('input').trigger('change').trigger('change')
+      expect(changeHandlerSpy.calls.count()).toEqual(2)
+
+      view.$el.find('a').click()
+      expect(clickHandlerSpy).toHaveBeenCalled()
+
+      view.$el.trigger('submit')
+      expect(submitHandlerSpy).toHaveBeenCalled()
+
+      done()
+    }, 500)
+
   })
 
 })
