@@ -17,7 +17,7 @@ $('.my-view').view({
     users: ['John', 'Peter', 'Mark'],
     clickCount: 0
   },
-  clickHandler: function () {
+  clickHandler: function (event, $button) {
     var count = this.getState().clickCount += 1
     this.setState({clickCount: count})
   }
@@ -34,10 +34,12 @@ And enjoy its simple DOM-based template:
     </li>
   </ul>
   <button :click="this.clickHandler($event, $target)">
-    You clicked {{count}} times.
+    You clicked {{clickCount}} times.
   </button>
 </div>
 ```
+
+Checkout the example above in this pen: https://codepen.io/gsantiago/pen/jqLjzg
 
 ## Installation
 
