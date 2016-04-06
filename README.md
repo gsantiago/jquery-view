@@ -41,6 +41,10 @@ And enjoy its simple DOM-based template:
 
 Checkout the example above in this pen: https://codepen.io/gsantiago/pen/jqLjzg
 
+## TODO Example
+
+Check out a TODO List example here: https://codepen.io/gsantiago/pen/KzyYqw
+
 ## Installation
 
 ```npm install jquery-view --save-dev```
