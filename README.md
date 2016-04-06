@@ -43,11 +43,43 @@ Checkout the example above in this pen: https://codepen.io/gsantiago/pen/jqLjzg
 
 ## Installation
 
-TODO
+```npm install jquery-view --save-dev```
+
+In your JS file just require it:
+
+```js
+require('jquery-view')
+```
+
+Or just copy `dist/jquery-view.js` and include it in your project.
 
 ## Usage
 
-TODO
+You can use it like a jQuery plugin:
+
+```js
+var myView = $('.my-view').view({options})
+```
+
+Or using the View constructor:
+
+```js
+var myView = new View($('.my-view'), {options})
+```
+
+### Options
+
+|Name|Type|Description|
+|--------|----|-------|
+|state | Object or Function | Default value for view's state.
+|template | String | Optional template.
+|templateUrl | String | Use an external template.
+|beforeRender | Function | Callback called before rendering.
+|afterRender | Function | Callback called after rendering.
+|events | Object|Event binding similar to Backbone's Event Hash.
+|init | Function | Callback called once the template is loaded.
+
+Each extra option passed will be attached to the instance like a method.
 
 ## Template Engine
 
