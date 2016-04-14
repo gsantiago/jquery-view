@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/gsantiago/jquery-view.svg?branch=master)](https://travis-ci.org/gsantiago/jquery-view)
 [![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg?gsantiago)](https://codeclimate.com/github/gsantiago/jquery-view)
-[![Test Coverage](https://codeclimate.com/github/gsantiago/jquery-view/badges/coverage.svg)](https://codeclimate.com/github/gsantiago/jquery-view/coverage)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
 ## Introduction
@@ -80,7 +79,7 @@ var myView = new View($('.my-view'), {options})
 |templateUrl | String | Use an external template.
 |beforeRender | Function | Callback called before rendering.
 |afterRender | Function | Callback called after rendering.
-|events | Object|Event binding similar to Backbone's Event Hash.
+|events | Object | Event binding similar to Backbone's Event Hash.
 |init | Function | Callback called once the template is loaded.
 
 Each extra option passed will be attached to the instance like a method:
@@ -108,7 +107,6 @@ Extend the current state.
 #### `props`
 
 Object with view's attributes.
-
 
 
 ## Template Engine
