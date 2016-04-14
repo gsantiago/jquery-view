@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/gsantiago/jquery-view.svg?branch=master)](https://travis-ci.org/gsantiago/jquery-view)
 [![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg?gsantiago)](https://codeclimate.com/github/gsantiago/jquery-view)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
+[![npm version](https://badge.fury.io/js/jquery-view.svg)](https://badge.fury.io/js/jquery-view)
 
 ## Introduction
 
