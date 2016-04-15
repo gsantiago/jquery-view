@@ -7,6 +7,7 @@ var View = require('./src/View')
 var Template = require('./src/Template')
 
 $.fn.view = function (options) {
+  if (!this.length) return
   var view = new View(this, options)
   this.data('view', view)
   return view
