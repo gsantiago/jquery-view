@@ -169,6 +169,24 @@ fn.setStateFromAjax = function (conf) {
 }
 
 /**
+ * Remove an object from an array in the state.
+ * @method
+ * @api public
+ * @param {String} state property
+ * @param {*} object you want to remove
+ */
+
+fn.removeFromState = function (prop, obj) {
+  var state = this.getState()[prop]
+  var index = state.indexOf(obj)
+  if (index === -1) return
+  state.splice(index, 1)
+  var newState = {}
+  newState[prop] = state
+  this.setState(newState)
+}
+
+/**
  * Get the template string.
  * The priority for get the template code is:
  * 1. templateUrl
