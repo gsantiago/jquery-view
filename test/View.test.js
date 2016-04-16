@@ -275,6 +275,21 @@ describe('View#removeFromState', function () {
 
 })
 
+describe('View#insertIntoState', function () {
+  it('should add a new item into the state', function () {
+    var view = new View($('<div>'), {
+      state: {
+        users: []
+      }
+    })
+
+    view.insertIntoState('users', 'Guilherme')
+    view.insertIntoState('users', 'Henrik')
+
+    expect(view.getState().users).toEqual(['Guilherme', 'Henrik'])
+  })
+})
+
 describe('View rendering', function () {
 
   it('should trigger `before render` and `after render` callbacks', function (done) {
