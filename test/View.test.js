@@ -239,6 +239,42 @@ describe('View#setStateFromAjax', function () {
   })
 })
 
+describe('View#removeFromState', function () {
+
+  it('should remove user from the state', function () {
+    var view = new View($('<div>'), {
+      state: {users: ['John', 'Peter', 'Luke']}
+    })
+
+    view.removeFromState('users', 'Luke')
+
+    expect(view.getState()).toEqual({
+      users: ['John', 'Peter']
+    })
+  })
+
+  it('should remove an object from the state', function () {
+    var users = [
+      {name: 'Luke', email: 'luke@email.com'},
+      {name: 'John', email: 'john@email.com'},
+      {name: 'Jack', email: 'jack@email.com'}
+    ]
+
+    var view = new View($('<div>'), {
+      state: {users: users}
+    })
+
+    // Remove the user John from the object
+    view.removeFromState('users', users[1])
+
+    expect(view.getState().users).toEqual([
+      {name: 'Luke', email: 'luke@email.com'},
+      {name: 'Jack', email: 'jack@email.com'}
+    ])
+  })
+
+})
+
 describe('View rendering', function () {
 
   it('should trigger `before render` and `after render` callbacks', function (done) {
