@@ -30,7 +30,8 @@ View.defaults = {
   templateUrl: '',
   beforeRender: $.noop,
   afterRender: $.noop,
-  events: null
+  events: null,
+  props: {}
 }
 
 /**
@@ -52,7 +53,7 @@ function View ($el, options) {
     self[key] = option
   })
 
-  this.props = utils.getProps($el)
+  this.props = $.extend({}, this._options.props, utils.getProps($el))
   this._directiveEvents = []
 
   this._getTemplate()
