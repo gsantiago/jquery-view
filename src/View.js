@@ -187,6 +187,22 @@ fn.removeFromState = function (prop, obj) {
 }
 
 /**
+ * Insert a new item into an array from the state.
+ * @method
+ * @api public
+ * @param {String} state property
+ * @param {*} item
+ */
+
+fn.insertIntoState = function (prop, item) {
+  var state = this.getState()[prop]
+  state.push(item)
+  var newState = {}
+  newState[prop] = state
+  this.setState()
+}
+
+/**
  * Get the template string.
  * The priority for get the template code is:
  * 1. templateUrl
