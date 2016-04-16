@@ -114,12 +114,15 @@ describe('View#constructor', function () {
     var $el = $('<user name="Guilherme" last-name="Santiago">{{this.props.name}} {{this.props.lastName}}</user>')
     var expected = '<user name="Guilherme" last-name="Santiago">Guilherme Santiago</user>'
     var view = new View($el, {
-
+      props: {
+        defaultValueTest: 'this is the default value for this prop'
+      }
     })
     expect(view.$el[0]).toEqual($(expected)[0])
     expect(view.props).toEqual({
       name: 'Guilherme',
-      lastName: 'Santiago'
+      lastName: 'Santiago',
+      defaultValueTest: 'this is the default value for this prop'
     })
   })
 
