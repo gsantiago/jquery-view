@@ -117,6 +117,58 @@ fn.setState = function (obj) {
 }
 
 /**
+ * Set the state from an Ajax request.
+ * @method
+ * @api public
+ * @params {Object} conf
+ * @returns {Promise}
+ */
+
+fn.setStateFromAjax = function (conf) {
+  var self = this
+
+  var defaults = {
+    url: null,
+    method: 'get',
+    state: null,
+    property: null,
+    data: null
+  }
+
+  conf = $.extend({}, defaults, conf)
+
+  var deferred = $.Deferred()
+
+  $.ajax({
+    url: conf.url,
+    context: self,
+    method: conf.method.toUpperCase(),
+    data: conf.data,
+    dataType: 'json'
+  })
+    .done(function (response) {
+      if (conf.property) {
+        response = response[conf.property]
+      }
+
+      if (conf.state) {
+        var obj = {}
+        obj[conf.state] = response
+        this.setState(obj)
+      } else {
+        this.setState(response)
+      }
+
+      deferred.resolveWith(this)
+    })
+    .fail(function (err) {
+      deferred.rejectWith(this, err)
+    })
+
+  return deferred.promise()
+}
+
+/**
  * Get the template string.
  * The priority for get the template code is:
  * 1. templateUrl
