@@ -162,6 +162,83 @@ describe('View#setState', function () {
 
 })
 
+describe('View#setStateFromAjax', function () {
+  var usersResponse = {users: ['John', 'Peter', 'Luke', 'Mark']}
+  var skillsResponse = ['html', 'css', 'js']
+
+  beforeEach(function () {
+    jasmine.Ajax.uninstall()
+    jasmine.Ajax.install()
+
+    jasmine.Ajax.stubRequest('/api/users').andReturn({
+      responseText: JSON.stringify(usersResponse),
+      statusCode: 200,
+      contentType: 'text/html'
+    })
+
+    jasmine.Ajax.stubRequest('/api/skills').andReturn({
+      responseText: JSON.stringify(skillsResponse),
+      statusCode: 200,
+      contentType: 'text/html'
+    })
+
+    jasmine.Ajax.stubRequest('/api/users/guilherme').andReturn({
+      responseText: JSON.stringify({name: 'Guilherme', lastName: 'Santiago', age: 20}),
+      statusCode: 200,
+      contentType: 'text/html'
+    })
+  })
+
+  afterEach(function () {
+    jasmine.Ajax.uninstall()
+  })
+
+  it('should set the whole state', function (done) {
+    var view = new View($('<div>'), {
+      state: {users: []}
+    })
+
+    view.setStateFromAjax({
+      url: '/api/users'
+    })
+      .done(function () {
+        expect(this.getState()).toEqual(usersResponse)
+        done()
+      })
+  })
+
+  it('should only set the skills state', function (done) {
+    var view = new View($('<div>'), {
+      state: {name: 'William', skills: []}
+    })
+
+    view.setStateFromAjax({
+      url: '/api/skills',
+      state: 'skills'
+    })
+      .done(function () {
+        expect(this.getState()).toEqual({name: 'William', skills: skillsResponse})
+        done()
+      })
+  })
+
+  it('should only set the `lastName` skill', function (done) {
+    var view = new View($('<div>'), {
+      state: {name: 'Guilherme', lastName: ''}
+    })
+
+    view.setStateFromAjax({
+      url: '/api/users/guilherme',
+      state: 'lastName',
+      property: 'lastName'
+    })
+      .done(function () {
+        expect(this.getState()).toEqual({name: 'Guilherme', lastName: 'Santiago'})
+        done()
+      })
+  })
+})
+
 describe('View rendering', function () {
 
   it('should trigger `before render` and `after render` callbacks', function (done) {
