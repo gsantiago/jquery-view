@@ -293,6 +293,30 @@ describe('View#insertIntoState', function () {
   })
 })
 
+describe('View#extendStateItem', function () {
+  it('should update an item', function () {
+    var fruits = [
+      {name: 'Banana', count: 7},
+      {name: 'Apple', count: 3},
+      {name: 'Orange', count: 0}
+    ]
+
+    var view = new View($('<div>'), {
+      state: {fruits: fruits}
+    })
+
+    view.extendStateItem('fruits', fruits[1], {count: 10})
+    view.extendStateItem('fruits', fruits[2], {name: 'Super Orange', price: 5})
+
+    expect(view.getState().fruits[1]).toEqual({name: 'Apple', count: 10})
+    expect(view.getState().fruits[2]).toEqual({
+      name: 'Super Orange',
+      count: 0,
+      price: 5
+    })
+  })
+})
+
 describe('View rendering', function () {
 
   it('should trigger `before render` and `after render` callbacks', function (done) {
