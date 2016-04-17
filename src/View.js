@@ -158,9 +158,7 @@ fn.setStateFromAjax = function (conf) {
       }
 
       if (conf.state) {
-        var obj = {}
-        obj[conf.state] = response
-        this.setState(obj)
+        this.setState(conf.state, response)
       } else {
         this.setState(response)
       }
@@ -187,9 +185,7 @@ fn.removeFromState = function (prop, obj) {
   var index = state.indexOf(obj)
   if (index === -1) return
   state.splice(index, 1)
-  var newState = {}
-  newState[prop] = state
-  this.setState(newState)
+  this.setState(prop, state)
 }
 
 /**
@@ -203,9 +199,7 @@ fn.removeFromState = function (prop, obj) {
 fn.insertIntoState = function (prop, item) {
   var state = this.getState()[prop]
   state.push(item)
-  var newState = {}
-  newState[prop] = state
-  this.setState()
+  this.setState(prop, state)
 }
 
 /**
@@ -222,9 +216,7 @@ fn.extendStateItem = function (prop, item, obj) {
   var index = state.indexOf(item)
   if (index === -1) return
   state.splice(index, 1, $.extend({}, item, obj))
-  var newState = {}
-  newState[prop] = state
-  this.setState(newState)
+  this.setState(prop, state)
 }
 
 /**
