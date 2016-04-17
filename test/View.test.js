@@ -151,6 +151,12 @@ describe('View#setState', function () {
     })
     view.setState({c: 40})
     expect(view.getState()).toEqual({a: 20, b: 30, c: 40})
+
+    view.setState('a', 25)
+    expect(view.getState()).toEqual({a: 25, b: 30, c: 40})
+
+    view.setState('d', 100)
+    expect(view.getState()).toEqual({a: 25, b: 30, c: 40, d: 100})
   })
 
   it('should fire `state change` event', function (done) {
