@@ -204,6 +204,25 @@ fn.insertIntoState = function (prop, item) {
 }
 
 /**
+ * Extends an item from the state.
+ * @method
+ * @api public
+ * @param {String} state property
+ * @param {Object} item
+ * @param {Object} obj
+ */
+
+fn.extendStateItem = function (prop, item, obj) {
+  var state = this.getState()[prop]
+  var index = state.indexOf(item)
+  if (index === -1) return
+  state.splice(index, 1, $.extend({}, item, obj))
+  var newState = {}
+  newState[prop] = state
+  this.setState(newState)
+}
+
+/**
  * Get the template string.
  * The priority for get the template code is:
  * 1. templateUrl
