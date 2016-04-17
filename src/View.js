@@ -111,8 +111,13 @@ fn.getState = function (obj) {
  * @emits `state change`
  */
 
-fn.setState = function (obj) {
-  this._state = $.extend(this._state, obj)
+fn.setState = function () {
+  if (arguments.length === 1) {
+    this._state = $.extend(this._state, arguments[0])
+  } else {
+    this._state[arguments[0]] = arguments[1]
+  }
+
   this.emit('state change', this.getState())
   return this
 }
