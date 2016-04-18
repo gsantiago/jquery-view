@@ -444,3 +444,19 @@ describe('View events', function () {
   })
 
 })
+
+describe('View Transclusion', function () {
+  it('should transclude elements', function () {
+    var source = fs.readFileSync(__dirname + '/fixtures/views/transclusion.html', 'utf8')
+    var expected = fs.readFileSync(__dirname + '/fixtures/views/transclusion.expected.html', 'utf8')
+    var $el = $('<my-element label="Title">Please <span>{{name}}</span>, transclude me!</my-element>')
+
+    var view = new View($el, {
+      template: source,
+      state: {name: 'Luke'}
+    })
+
+    expect(view.$el[0]).toEqual($(expected)[0])
+    expect(view.$el.html()).toEqual($(expected).html())
+  })
+})

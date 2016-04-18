@@ -45,6 +45,7 @@ View.defaults = {
 function View ($el, options) {
   var self = this
   this.$el = $el
+  this.transclusion = $el.html()
   this._options = $.extend({}, View.defaults, options)
   this._getInitialState()
 

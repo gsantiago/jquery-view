@@ -173,3 +173,12 @@ function registerEvent ($el, eventName, expression) {
 
   $el.attr('data-view-event-listener', view._directiveEvents.length - 1)
 }
+
+/**
+ * Transclusion.
+ */
+
+directives.transclude = function ($el, value, props) {
+  if (!this.context.transclusion) return
+  $el.html(this.context.transclusion)
+}
