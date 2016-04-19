@@ -188,7 +188,7 @@ directives.transclude = function ($el, value, props) {
  */
 
 directives.data = function ($el, value, props) {
-  var controls = ['input', 'textarea']
+  var controls = ['input', 'textarea', 'select']
   var tagName = $el[0].tagName.toLowerCase()
 
   if (controls.indexOf(tagName) === -1) return

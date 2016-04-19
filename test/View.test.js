@@ -474,7 +474,7 @@ describe('View Data Directive', function () {
     var $radio1 = view.$el.find('.radio1') // data = 'radio1'
     var $radio2 = view.$el.find('.radio2') // data = 'radio2', checked
     var $radio3 = view.$el.find('.radio3') // data = 'radio3'
-
+    var $selectItems = view.$el.find('.select') // data = name = 'items'
 
     expect(view.data.$input[0]).toEqual($input1[0])
     expect(view.data.$myInput[0]).toEqual($myInput[0])
@@ -483,12 +483,14 @@ describe('View Data Directive', function () {
     expect(view.data.$radio1[0]).toEqual($radio1[0])
     expect(view.data.$radio2[0]).toEqual($radio2[0])
     expect(view.data.$radio3[0]).toEqual($radio3[0])
+    expect(view.data.$items[0]).toEqual($selectItems[0])
 
     view.data.input = 'Hello, World!!!'
     view.data.myInput = 'Value for myInput'
     view.data.myCheckbox = true
     view.data.message = 'This is my message'
     view.data.radio3 = true
+    view.data.items = 'option 2'
 
     expect($input1.val()).toEqual('Hello, World!!!')
     expect($myInput.val()).toEqual('Value for myInput')
@@ -497,12 +499,14 @@ describe('View Data Directive', function () {
     expect($radio1.prop('checked')).toBeFalsy()
     expect($radio2.prop('checked')).toBeFalsy()
     expect($radio3.prop('checked')).toBeTruthy()
+    expect($selectItems.find(':selected').val()).toEqual('option 2')
 
     $input1.val('new value for this input')
     $myInput.val('change this input')
     $checkbox.prop('checked', false)
     $message.val('my new message')
     $radio1.prop('checked', true)
+    $selectItems.find('[value="option 3"]').prop('selected', true)
 
     expect(view.data.input).toEqual($input1.val())
     expect(view.data.myInput).toEqual($myInput.val())
@@ -511,5 +515,6 @@ describe('View Data Directive', function () {
     expect(view.data.radio1).toEqual($radio1.prop('checked'))
     expect(view.data.radio2).toEqual($radio2.prop('checked'))
     expect(view.data.radio3).toEqual($radio3.prop('checked'))
+    expect(view.data.items).toEqual($selectItems.find(':selected').val())
   })
 })

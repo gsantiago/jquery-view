@@ -420,18 +420,21 @@ fn._getDataReferences = function ($el) {
   $references.each(function () {
     var $control = $(this)
     var isCheckbox = ~['checkbox', 'radio'].indexOf($control.attr('type'))
+    var isSelect = $control[0].tagName.toLowerCase() === 'select'
     var reference = $control.data('view-reference')
 
     Object.defineProperty(self.data, reference, {
       get: function () {
-        return isCheckbox
-          ? $control.prop('checked')
-          : $control.val()
+        if (isCheckbox) return $control.prop('checked')
+        if (isSelect) return $control.find(':selected').val()
+        return $control.val()
       },
       set: function (value) {
-        return isCheckbox
-          ? $control.prop('checked', value)
-          : $control.val(value)
+        if (isCheckbox) return $control.prop('checked', value)
+        if (isSelect) {
+          return $control.find('[value="' + value + '"]').prop('selected', true)
+        }
+        return $control.val(value)
       }
     })
 
