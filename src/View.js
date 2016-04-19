@@ -319,6 +319,8 @@ fn._render = function () {
       .on(event.type, event.callback)
   })
 
+  this._getDataReferences($el)
+
   this.emit('after render', $el, currentState)
 }
 
@@ -399,5 +401,40 @@ fn._bindEvents = function () {
         : self[eventListener]
       eventListener.call(self, $(this), event)
     })
+  })
+}
+
+/**
+ * Get data references from `:data` directive.
+ * @method
+ * @api private
+ */
+
+fn._getDataReferences = function ($el) {
+  var self = this
+
+  this.data = {}
+
+  var $references = $el.find('[data-view-reference]')
+
+  $references.each(function () {
+    var $control = $(this)
+    var isCheckbox = ~['checkbox', 'radio'].indexOf($control.attr('type'))
+    var reference = $control.data('view-reference')
+
+    Object.defineProperty(self.data, reference, {
+      get: function () {
+        return isCheckbox
+          ? $control.prop('checked')
+          : $control.val()
+      },
+      set: function (value) {
+        return isCheckbox
+          ? $control.prop('checked', value)
+          : $control.val(value)
+      }
+    })
+
+    self.data['$' + reference] = $control
   })
 }

@@ -182,3 +182,18 @@ directives.transclude = function ($el, value, props) {
   if (!this.context.transclusion) return
   $el.html(this.context.transclusion)
 }
+
+/**
+ * Data directives for create references for form controls.
+ */
+
+directives.data = function ($el, value, props) {
+  var controls = ['input', 'textarea']
+  var tagName = $el[0].tagName.toLowerCase()
+
+  if (controls.indexOf(tagName) === -1) return
+
+  if (!value) value = $el.attr('name')
+
+  $el.attr('data-view-reference', value)
+}
