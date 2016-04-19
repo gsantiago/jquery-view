@@ -460,3 +460,56 @@ describe('View Transclusion', function () {
     expect(view.$el.html()).toEqual($(expected).html())
   })
 })
+
+describe('View Data Directive', function () {
+  it('should work with inputs', function () {
+    var source = fs.readFileSync(__dirname + '/fixtures/views/view-data-directive.html', 'utf8')
+
+    var view = new View($('<div>'), {template: source})
+
+    var $input1 = view.$el.find('.input') // data = 'input'
+    var $myInput = view.$el.find('.input2') // data = name = 'myInput2'
+    var $checkbox = view.$el.find('[type="checkbox"]') // data = myCheckbox
+    var $message = view.$el.find('textarea') // data = 'message'
+    var $radio1 = view.$el.find('.radio1') // data = 'radio1'
+    var $radio2 = view.$el.find('.radio2') // data = 'radio2', checked
+    var $radio3 = view.$el.find('.radio3') // data = 'radio3'
+
+
+    expect(view.data.$input[0]).toEqual($input1[0])
+    expect(view.data.$myInput[0]).toEqual($myInput[0])
+    expect(view.data.$myCheckbox[0]).toEqual($checkbox[0])
+    expect(view.data.$message[0]).toEqual($message[0])
+    expect(view.data.$radio1[0]).toEqual($radio1[0])
+    expect(view.data.$radio2[0]).toEqual($radio2[0])
+    expect(view.data.$radio3[0]).toEqual($radio3[0])
+
+    view.data.input = 'Hello, World!!!'
+    view.data.myInput = 'Value for myInput'
+    view.data.myCheckbox = true
+    view.data.message = 'This is my message'
+    view.data.radio3 = true
+
+    expect($input1.val()).toEqual('Hello, World!!!')
+    expect($myInput.val()).toEqual('Value for myInput')
+    expect($checkbox.prop('checked')).toBeTruthy()
+    expect($message.val()).toEqual('This is my message')
+    expect($radio1.prop('checked')).toBeFalsy()
+    expect($radio2.prop('checked')).toBeFalsy()
+    expect($radio3.prop('checked')).toBeTruthy()
+
+    $input1.val('new value for this input')
+    $myInput.val('change this input')
+    $checkbox.prop('checked', false)
+    $message.val('my new message')
+    $radio1.prop('checked', true)
+
+    expect(view.data.input).toEqual($input1.val())
+    expect(view.data.myInput).toEqual($myInput.val())
+    expect(view.data.myCheckbox).toEqual($checkbox.prop('checked'))
+    expect(view.data.message).toEqual($message.val())
+    expect(view.data.radio1).toEqual($radio1.prop('checked'))
+    expect(view.data.radio2).toEqual($radio2.prop('checked'))
+    expect(view.data.radio3).toEqual($radio3.prop('checked'))
+  })
+})
