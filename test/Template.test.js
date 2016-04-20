@@ -7,6 +7,7 @@
 var $ = require('jquery')
 var Template = require('../src/Template')
 var fs = require('fs')
+var utils = require('../src/utils')
 
 /**
  * Template methods.
@@ -136,6 +137,33 @@ describe('The method', function () {
       this.template.supplant('{{ myFunc() }}')
     })
 
+    it('should return an object formated in JSON', function () {
+      var pete = {
+        name: 'Peter',
+        lastName: 'Parker',
+        items: ['a', 'b', 'c']
+      }
+
+      this.template.vars = {
+        myObject: pete
+      }
+
+      var result = this.template.supplant('{{myObject}}')
+
+      expect(result).toEqual(utils.escape(JSON.stringify(pete, null, 2)))
+    })
+
+    it('should return a function in string format', function () {
+      var myFunc = function (arg1, arg2) {
+        return arg1 + arg2
+      }
+
+      this.template.vars = {myFunc: myFunc}
+
+      var result = this.template.supplant('{{myFunc}}')
+
+      expect(result).toEqual(utils.escape(myFunc.toString()))
+    })
   })
 
 

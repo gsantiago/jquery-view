@@ -110,7 +110,17 @@ fn.supplant = function (str) {
   var self = this
 
   var fn = function (a, b) {
-    return self.compile(b)
+    var ret = self.compile(b)
+
+    if ($.isPlainObject(ret)) {
+      ret = JSON.stringify(ret, null, 2)
+    }
+
+    if ($.isFunction(ret)) {
+      ret = ret.toString()
+    }
+
+    return ret
   }
 
   var result = str.replace(/{{([^{}]*)}}/g, function (a, b) {
