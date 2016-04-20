@@ -47,7 +47,7 @@ function View ($el, options) {
   this.$el = $el
   this.transclusion = $el.html()
   this._options = $.extend({}, View.defaults, options)
-  this._getInitialState()
+  this._state = {}
 
   $.each(this._options, function (key, option) {
     if (Object.keys(View.defaults).indexOf(key) !== -1) return
@@ -57,15 +57,16 @@ function View ($el, options) {
   this.props = $.extend({}, this._options.props, utils.getProps($el))
   this._directiveEvents = []
 
-  this._getTemplate()
-    .done(function (template) {
+  $.when(this._getInitialState(), this._getTemplate())
+    .done(function (state, template) {
+      $.extend(self._state, state)
       self._templateSource = template
       self._template = new Template(template)
       self.emit('template loaded')
       self._start()
     })
     .fail(function (err) {
-      console.error('Fail to load external template:', err)
+      console.error(err)
     })
 }
 
@@ -89,9 +90,21 @@ var fn = View.prototype
 
 fn._getInitialState = function () {
   var state = this._options.state
-  this._state = $.isFunction(state)
-    ? state()
+  state = $.isFunction(state)
+    ? state.call(this)
     : state
+
+  if (state.promise) {
+    var deferred = $.Deferred()
+
+    state.done(function (response) {
+      deferred.resolve(response)
+    }).fail(deferred.reject)
+
+    return deferred.promise()
+  }
+
+  return state
 }
 
 /**

@@ -32,13 +32,39 @@ describe('View#constructor', function () {
 
   it('should support initial state as a function', function () {
     var state = {a: 1, b: 2}
-    var view = new View($('<div>'), {
+    var $el = $('<div>')
+    var view = new View($el, {
       state: function () {
+        expect(this.$el[0]).toEqual($el[0])
         return state
       }
     })
 
     expect(view._state).toEqual(state)
+  })
+
+  it('should support initial state as a promise', function (done) {
+    jasmine.Ajax.install()
+
+    var data = {countries: ['Brazil', 'Argentina', 'Mexico', 'Chile']}
+
+    jasmine.Ajax.stubRequest('/api/countries').andReturn({
+      responseText: JSON.stringify(data),
+      statusCode: 200,
+      contentType: 'application/json'
+    })
+
+    var view = new View($('<div>'), {
+      state: function () {
+        return $.get('/api/countries')
+      },
+      init: function () {
+        expect(this.getState()).toEqual(data)
+        done()
+      }
+    })
+
+    jasmine.Ajax.uninstall()
   })
 
   it('should implement custom methods', function (done) {
