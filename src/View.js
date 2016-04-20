@@ -253,7 +253,7 @@ fn._getTemplate = function () {
   var deferred = $.Deferred()
 
   if (options.template) {
-    deferred.resolve(options.template)
+    deferred.resolve($el.html(options.template).prop('outerHTML'))
   } else {
     var source = $el.prop('outerHTML')
     deferred.resolve(source)

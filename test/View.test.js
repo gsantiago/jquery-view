@@ -105,8 +105,8 @@ describe('View#constructor', function () {
       state: {content: 'My Beautiful Content!'}
     })
 
-    expect(view._templateSource).toEqual(tpl)
-    expect(view.$el.prop('outerHTML')).toEqual('<p>My Beautiful Content!</p>')
+    expect(view._templateSource).toEqual('<div><p>{{ content }}</p></div>')
+    expect(view.$el.prop('outerHTML')).toEqual('<div><p>My Beautiful Content!</p></div>')
   })
 
   it('should support external templates', function (done) {
@@ -483,7 +483,7 @@ describe('View Transclusion', function () {
     })
 
     expect(view.$el[0]).toEqual($(expected)[0])
-    expect(view.$el.html()).toEqual($(expected).html())
+    expect(view.$el.prop('outerHTML')).toEqual($(expected).prop('outerHTML'))
   })
 })
 
