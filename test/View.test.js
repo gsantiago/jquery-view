@@ -60,11 +60,10 @@ describe('View#constructor', function () {
       },
       init: function () {
         expect(this.getState()).toEqual(data)
+        jasmine.Ajax.uninstall()
         done()
       }
     })
-
-    jasmine.Ajax.uninstall()
   })
 
   it('should implement custom methods', function (done) {
@@ -128,12 +127,11 @@ describe('View#constructor', function () {
         expect(this._templateSource).toEqual('<div><p>Welcome, <strong :bind="name"></strong></p></div>')
         this.on('ready', function ($el) {
           expect($el.prop('outerHTML')).toEqual(expected)
+          jasmine.Ajax.uninstall()
           done()
         })
       }
     })
-
-    jasmine.Ajax.uninstall()
   })
 
   it('should get element\'s props', function () {
