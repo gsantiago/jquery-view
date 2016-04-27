@@ -68,7 +68,7 @@ fn.parse = function (vars, context) {
   $holder.find('*').each(function () {
     var $this = $(this)
     if (!$this.parents().last().is($holder)) return
-    self.applyDirectives($this)
+    self.applyDirectives($this, $holder)
   })
 
   return this.supplant($holder.html()).replace(/^\s*[\r\n]/gm, '')
@@ -135,15 +135,25 @@ fn.supplant = function (str) {
 /**
  * Apply directives in the element.
  * @method
- * @param {jQuery Element}
+ * @param {jQuery Element} $el
+ * @param {jQuery Element} $holder
  */
 
-fn.applyDirectives = function ($el) {
+fn.applyDirectives = function ($el, $holder) {
   var self = this
   var props = utils.getProps($el)
   var directives = Object.keys(Template.directives)
 
+  // `:repeat` has a higher priority
+  if (props[':repeat']) {
+    Template.directives.repeat.call(self, $el, props[':repeat'], props)
+    $el.removeAttr(':repeat')
+    delete props[':repeat']
+  }
+
   $.each(props, function (key, val) {
+    if (!$el.parents().last().is($holder)) return
+
     if (/^:.*/.test(key) && directives.indexOf(key.replace(':', '')) !== -1) {
       Template.directives[key.replace(':', '')].call(self, $el, val, props)
       $el.removeAttr(key)

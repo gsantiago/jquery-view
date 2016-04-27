@@ -480,4 +480,12 @@ describe('The directive', function () {
     })
   })
 
+  it('should render `:repeat` first', function () {
+    var source = fs.readFileSync(__dirname + '/fixtures/templates/directive-priority.html', 'utf8')
+    var expected = fs.readFileSync(__dirname + '/fixtures/templates/directive-priority.expected.html', 'utf8')
+    var template = new Template(source)
+    var result = template.parse({items: ['First Item', 'Active Item', 'Last Item']})
+    expect(result).toEqual(expected)
+  })
+
 })
