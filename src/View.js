@@ -27,6 +27,7 @@ var cache = {}
 
 View.defaults = {
   state: {},
+  data: {},
   template: '',
   templateUrl: '',
   beforeRender: $.noop,
@@ -48,6 +49,7 @@ function View ($el, options) {
   this.transclusion = $el.html()
   this._options = $.extend({}, View.defaults, options)
   this._state = {}
+  this._data = {}
 
   $.each(this._options, function (key, option) {
     if (Object.keys(View.defaults).indexOf(key) !== -1) return
@@ -57,9 +59,10 @@ function View ($el, options) {
   this.props = $.extend({}, this._options.props, utils.getProps($el))
   this._directiveEvents = []
 
-  $.when(this._getInitialState(), this._getTemplate())
-    .done(function (state, template) {
+  $.when(this._getInitialState(), this._getTemplate(), this._getInitialData())
+    .done(function (state, template, data) {
       $.extend(self._state, state)
+      $.extend(self._data, data)
       self._templateSource = template
       self._template = new Template(template)
       self.emit('template loaded')
@@ -108,6 +111,31 @@ fn._getInitialState = function () {
 }
 
 /**
+ * Get the initial data.
+ * @method
+ * @api private
+ */
+
+fn._getInitialData = function () {
+  var data = this._options.data
+  data = $.isFunction(data)
+    ? data.call(this)
+    : data
+
+  if (data.promise) {
+    var deferred = $.Deferred()
+
+    data.done(function (response) {
+      deferred.resolve(response)
+    }).fail(deferred.reject)
+
+    return deferred.promise()
+  }
+
+  return data
+}
+
+/**
  * Return the current state.
  * @method
  * @api public
@@ -116,6 +144,49 @@ fn._getInitialState = function () {
 
 fn.getState = function (obj) {
   return this._state
+}
+
+/**
+ * Return the current data.
+ * @method
+ * @api public
+ * @returns {Object} data
+ */
+
+fn.getData = function () {
+  return this._data
+}
+
+/**
+ * Set data.
+ * @method
+ * @param {String} keypath
+ * @param {*} value
+ */
+
+fn.set = function (keypath, value) {
+  var pointer = this._data
+  var props = keypath.split('.')
+  var prop = ''
+
+  while (props.length > 1) {
+    prop = props.shift()
+    if ($.isPlainObject(pointer[prop])) {
+      pointer = pointer[prop]
+    }
+  }
+
+  prop = props[0]
+
+  var match = prop.match(/^(.*)+\[\]$/i)
+
+  if (match) {
+    pointer[match[1]].push(utils.resolve(value, pointer[match[1]]))
+  } else {
+    pointer[prop] = utils.resolve(value, pointer[prop])
+  }
+
+  return this
 }
 
 /**

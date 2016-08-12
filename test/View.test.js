@@ -17,33 +17,33 @@ describe('View#constructor', function () {
     expect($el).toEqual(view.$el)
   })
 
-  it('should support initial state', function () {
-    var state = {
+  it('should support initial data', function () {
+    var data = {
       name: 'Guilherme',
-      age: 20
+      age: 21
     }
 
     var view = new View($('<div>'), {
-      state: state
+      data: data
     })
 
-    expect(view._state).toEqual(state)
+    expect(view._data).toEqual(data)
   })
 
-  it('should support initial state as a function', function () {
-    var state = {a: 1, b: 2}
+  it('should support initial data as a function', function () {
+    var data = {a: 1, b: 2}
     var $el = $('<div>')
     var view = new View($el, {
-      state: function () {
+      data: function () {
         expect(this.$el[0]).toEqual($el[0])
-        return state
+        return data
       }
     })
 
-    expect(view._state).toEqual(state)
+    expect(view._data).toEqual(data)
   })
 
-  it('should support initial state as a promise', function (done) {
+  it('should support initial data as a promise', function (done) {
     jasmine.Ajax.install()
 
     var data = {countries: ['Brazil', 'Argentina', 'Mexico', 'Chile']}
@@ -55,11 +55,11 @@ describe('View#constructor', function () {
     })
 
     var view = new View($('<div>'), {
-      state: function () {
+      data: function () {
         return $.get('/api/countries')
       },
       init: function () {
-        expect(this.getState()).toEqual(data)
+        expect(this.getData()).toEqual(data)
         jasmine.Ajax.uninstall()
         done()
       }
@@ -162,6 +162,104 @@ describe('View#getState', function () {
     expect(view.getState()).toEqual(view._state)
     expect(view._state).toEqual(state)
   })
+})
+
+describe('View#set', function () {
+
+  it('should set a new property', function () {
+    var data = {a: 20, b: 30}
+    var view = new View($('<div>'), {
+      data: function () {
+        return data
+      }
+    })
+
+    view.set('c', 40)
+    expect(view.getData()).toEqual({a: 20, b: 30, c: 40})
+  })
+
+  it('should set an existing property', function () {
+    var data = {a: 1, b: 2, c: 3}
+    var view = new View($('<div>'), {
+      data: data
+    })
+
+    view.set('c', 'new value for C')
+    expect(view.getData()).toEqual({
+      a: 1,
+      b: 2,
+      c: 'new value for C'
+    })
+  })
+
+  it('should set a property from keypath', function () {
+    var data = {
+      name: 'David',
+      skills: {js: 'jquery'}
+    }
+    var view = new View($('<div>'), {
+      data: data
+    })
+
+    view.set('skills.js', 'vanilla')
+
+    expect(view.getData()).toEqual({
+      name: 'David',
+      skills: {js: 'vanilla'}
+    })
+  })
+
+  it('should support function as value', function () {
+    var view = new View($('<div>'), {
+      data: {
+        a: 'value',
+        sub: {
+          prop: {test: 'value for test'}
+        }
+      }
+    })
+
+    view.set('a', function (value) {
+      return value.toUpperCase()
+    })
+
+    view.set('sub.prop.test', function (value) {
+      return value + ', cool!'
+    })
+
+    expect(view.getData()).toEqual({
+      a: 'VALUE',
+      sub: {
+        prop: {test: 'value for test, cool!'}
+      }
+    })
+  })
+
+  it('should support array pushing', function () {
+    var view = new View($('<div>'), {
+      data: {
+        skills: {
+          frontend: ['html'],
+          backend: []
+        }
+      }
+    })
+
+    view.set('skills.frontend[]', 'css')
+    view.set('skills.backend[]', 'php')
+    view.set('skills.backend[]', function (array) {
+      expect(array).toEqual(['php'])
+      return 'java'
+    })
+
+    expect(view.getData()).toEqual({
+      skills: {
+        frontend: ['html', 'css'],
+        backend: ['php', 'java']
+      }
+    })
+  })
+
 })
 
 describe('View#setState', function () {
