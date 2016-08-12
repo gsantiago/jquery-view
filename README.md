@@ -5,6 +5,8 @@
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![npm version](https://badge.fury.io/js/jquery-view.svg)](https://badge.fury.io/js/jquery-view)
 
+> NOTE: This project is in early development. Don't use it in production yet.
+
 ## Introduction
 
 jQuery View provides you a simple way to create Views and enhance your HTML.
