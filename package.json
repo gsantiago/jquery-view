@@ -2,7 +2,15 @@
   "name": "jquery-view",
   "version": "0.0.4",
   "description": "Create views and enhance your HTML with jQuery",
-  "keywords": ["jquery", "view", "template", "events", "directives", "plugin", "mvc"],
+  "keywords": [
+    "jquery",
+    "view",
+    "template",
+    "events",
+    "directives",
+    "plugin",
+    "mvc"
+  ],
   "scripts": {
     "test": "./node_modules/karma/bin/karma start"
   },
@@ -31,6 +39,7 @@
     "karma-jasmine": "^0.3.7",
     "karma-jasmine-diff-reporter": "^0.3.4",
     "karma-phantomjs-launcher": "^1.0.0",
+    "morphdom": "^2.0.2",
     "phantomjs-prebuilt": "^2.1.4",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0",

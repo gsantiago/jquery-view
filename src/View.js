@@ -7,6 +7,7 @@ var EventEmitter = require('events').EventEmitter
 var inherits = require('util').inherits
 var Template = require('./Template')
 var utils = require('./utils')
+var morphdom = require('morphdom')
 
 /**
  * Expose `View`.
@@ -317,11 +318,14 @@ fn._render = function () {
   this._directiveEvents = []
 
   var html = template.parse(currentState, this)
-  var $newEl = $(html)
 
-  $el.replaceWith($newEl)
-
-  this.$el = $el = $newEl
+  morphdom($el[0], html, {
+    onBeforeElUpdated: function (fromEl, toEl) {
+      if (toEl.tagName === 'INPUT') {
+        toEl.value = fromEl.value
+      }
+    }
+  })
 
   // Bind events
   $.each(this._directiveEvents, function (index, event) {
