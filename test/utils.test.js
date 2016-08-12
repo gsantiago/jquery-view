@@ -40,3 +40,31 @@ describe('utils#escape', function () {
   })
 
 })
+
+describe('utils#resolve', function () {
+
+  it('should return the original value passed', function () {
+    expect(utils.resolve('string')).toEqual('string')
+    expect(utils.resolve(100)).toEqual(100)
+    expect(utils.resolve({a: 1})).toEqual({a: 1})
+  })
+
+  it('should return the value from the function', function () {
+    var value1 = utils.resolve(function () {
+      return 'test'
+    })
+
+    var value2 = utils.resolve(function (name) {
+      return name.toUpperCase()
+    }, 'peter')
+
+    var value3 = utils.resolve(function (a, b) {
+      return a + b
+    }, 10, 20)
+
+    expect(value1).toEqual('test')
+    expect(value2).toEqual('PETER')
+    expect(value3).toEqual(30)
+  })
+
+})

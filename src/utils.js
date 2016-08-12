@@ -53,3 +53,20 @@ exports.escape = function (str) {
     return entityMap[s]
   })
 }
+
+/**
+ * Resolves a value if is a function or return the object passed itself.
+ * @param {Function | *} obj
+ * @param {*} optional argument for the function
+ */
+
+exports.resolve = function () {
+  var args = $.makeArray(arguments)
+  var obj = args.shift()
+
+  if ($.isFunction(obj)) {
+    return obj.apply(null, args)
+  }
+
+  return obj
+}
