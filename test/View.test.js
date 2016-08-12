@@ -391,43 +391,6 @@ describe('View rendering', function () {
 
 describe('View events', function () {
 
-  it('should add listeners to elements with event hash', function (done) {
-    var source = fs.readFileSync(__dirname + '/fixtures/views/view-events-hash.html', 'utf8')
-    var $div = $(source)
-
-    var editSpy = jasmine.createSpy()
-    var changeSpy = jasmine.createSpy()
-
-    var view = new View($div, {
-      events: {
-        'submit': 'submitHandler',
-        'click,dblclick .js-edit': 'editHandler',
-        'change [name="my-input"]': 'changeHandler'
-      },
-
-      submitHandler: function ($el, event) {
-        event.preventDefault()
-        done()
-      },
-
-      editHandler: function ($el, event) {
-        editSpy()
-      },
-
-      changeHandler: function ($el, event) {
-        changeSpy()
-      }
-    })
-
-    view.$el.find('.js-edit').trigger('click').trigger('dblclick')
-    expect(editSpy.calls.count()).toEqual(2)
-
-    view.$el.find('[name="my-input"]').trigger('change')
-    expect(changeSpy.calls.count()).toEqual(1)
-
-    view.$el.trigger('submit')
-  })
-
   it('should add event listeners with directives', function (done) {
     var source = fs.readFileSync(__dirname + '/fixtures/views/view-events-directive.html', 'utf8')
     var $div = $(source).appendTo('body')
@@ -482,63 +445,5 @@ describe('View Transclusion', function () {
 
     expect(view.$el[0]).toEqual($(expected)[0])
     expect(view.$el.prop('outerHTML')).toEqual($(expected).prop('outerHTML'))
-  })
-})
-
-describe('View Data Directive', function () {
-  it('should work with inputs', function () {
-    var source = fs.readFileSync(__dirname + '/fixtures/views/view-data-directive.html', 'utf8')
-
-    var view = new View($('<div>'), {template: source})
-
-    var $input1 = view.$el.find('.input') // data = 'input'
-    var $myInput = view.$el.find('.input2') // data = name = 'myInput2'
-    var $checkbox = view.$el.find('[type="checkbox"]') // data = myCheckbox
-    var $message = view.$el.find('textarea') // data = 'message'
-    var $radio1 = view.$el.find('.radio1') // data = 'radio1'
-    var $radio2 = view.$el.find('.radio2') // data = 'radio2', checked
-    var $radio3 = view.$el.find('.radio3') // data = 'radio3'
-    var $selectItems = view.$el.find('.select') // data = name = 'items'
-
-    expect(view.data.$input[0]).toEqual($input1[0])
-    expect(view.data.$myInput[0]).toEqual($myInput[0])
-    expect(view.data.$myCheckbox[0]).toEqual($checkbox[0])
-    expect(view.data.$message[0]).toEqual($message[0])
-    expect(view.data.$radio1[0]).toEqual($radio1[0])
-    expect(view.data.$radio2[0]).toEqual($radio2[0])
-    expect(view.data.$radio3[0]).toEqual($radio3[0])
-    expect(view.data.$items[0]).toEqual($selectItems[0])
-
-    view.data.input = 'Hello, World!!!'
-    view.data.myInput = 'Value for myInput'
-    view.data.myCheckbox = true
-    view.data.message = 'This is my message'
-    view.data.radio3 = true
-    view.data.items = 'option 2'
-
-    expect($input1.val()).toEqual('Hello, World!!!')
-    expect($myInput.val()).toEqual('Value for myInput')
-    expect($checkbox.prop('checked')).toBeTruthy()
-    expect($message.val()).toEqual('This is my message')
-    expect($radio1.prop('checked')).toBeFalsy()
-    expect($radio2.prop('checked')).toBeFalsy()
-    expect($radio3.prop('checked')).toBeTruthy()
-    expect($selectItems.find(':selected').val()).toEqual('option 2')
-
-    $input1.val('new value for this input')
-    $myInput.val('change this input')
-    $checkbox.prop('checked', false)
-    $message.val('my new message')
-    $radio1.prop('checked', true)
-    $selectItems.find('[value="option 3"]').prop('selected', true)
-
-    expect(view.data.input).toEqual($input1.val())
-    expect(view.data.myInput).toEqual($myInput.val())
-    expect(view.data.myCheckbox).toEqual($checkbox.prop('checked'))
-    expect(view.data.message).toEqual($message.val())
-    expect(view.data.radio1).toEqual($radio1.prop('checked'))
-    expect(view.data.radio2).toEqual($radio2.prop('checked'))
-    expect(view.data.radio3).toEqual($radio3.prop('checked'))
-    expect(view.data.items).toEqual($selectItems.find(':selected').val())
   })
 })

@@ -31,7 +31,6 @@ View.defaults = {
   templateUrl: '',
   beforeRender: $.noop,
   afterRender: $.noop,
-  events: null,
   props: {}
 }
 
@@ -336,8 +335,6 @@ fn._render = function () {
       .on(event.type, event.callback)
   })
 
-  this._getDataReferences($el)
-
   this.emit('after render', $el, currentState)
 }
 
@@ -354,107 +351,7 @@ fn._start = function () {
   this.on('before render', this._options.beforeRender)
   this.on('after render', this._options.afterRender)
 
-  if (this._options.events) {
-    this.on('before render', this._clearEvents)
-    this.on('after render', this._bindEvents)
-  }
-
   if (this.init) this.init()
   this._render()
   this.emit('ready', this.$el)
-}
-
-/**
- * Walk through events hash and triggers a callback.
- * @method
- * @params {Function} cb
- * @api private
- */
-
-fn._walkEventsHash = function (cb) {
-  var self = this
-
-  $.each(this._options.events, function (eventName, eventListener) {
-    eventName = eventName.split(/\s+/)
-    var listeners = eventName[0].split(',')
-    var selectors = eventName[1] ? eventName[1].split(',') : ['']
-
-    $.each(selectors, function (index, selector) {
-      $.each(listeners, function (index, listener) {
-        cb.call(self, selector, listener, eventListener)
-      })
-    })
-  })
-}
-
-/**
- * Clear events before rendering.
- * @method
- * @api private
- */
-
-fn._clearEvents = function () {
-  this._walkEventsHash(function (selector, listener, eventListener) {
-    this.$el.find(selector).off(listener)
-  })
-}
-
-/**
- * Bind events after rendering.
- * @method
- * @api private
- */
-
-fn._bindEvents = function () {
-  var self = this
-  this._walkEventsHash(function (selector, listener, eventListener) {
-    var $target = selector
-     ? this.$el.find(selector)
-     : this.$el
-
-    $target.on(listener, function (event) {
-      eventListener = $.isFunction(eventListener)
-        ? eventListener
-        : self[eventListener]
-      eventListener.call(self, $(this), event)
-    })
-  })
-}
-
-/**
- * Get data references from `:data` directive.
- * @method
- * @api private
- */
-
-fn._getDataReferences = function ($el) {
-  var self = this
-
-  this.data = {}
-
-  var $references = $el.find('[data-view-reference]')
-
-  $references.each(function () {
-    var $control = $(this)
-    var isCheckbox = ~['checkbox', 'radio'].indexOf($control.attr('type'))
-    var isSelect = $control[0].tagName.toLowerCase() === 'select'
-    var reference = $control.data('view-reference')
-
-    Object.defineProperty(self.data, reference, {
-      get: function () {
-        if (isCheckbox) return $control.prop('checked')
-        if (isSelect) return $control.find(':selected').val()
-        return $control.val()
-      },
-      set: function (value) {
-        if (isCheckbox) return $control.prop('checked', value)
-        if (isSelect) {
-          return $control.find('[value="' + value + '"]').prop('selected', true)
-        }
-        return $control.val(value)
-      }
-    })
-
-    self.data['$' + reference] = $control
-  })
 }
