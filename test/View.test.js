@@ -294,6 +294,38 @@ describe('View#get', function () {
   })
 })
 
+describe('View#extend', function () {
+
+  it('should extends the data', function () {
+    var view = new View($('<div>'), {
+      data: {
+        name: 'James',
+        skills: []
+      }
+    })
+
+    expect(view.get()).toEqual({
+      name: 'James',
+      skills: []
+    })
+
+    view.extend({name: 'William'})
+
+    expect(view.get()).toEqual({
+      name: 'William',
+      skills: []
+    })
+
+    view.extend({skills: ['html', 'css', 'js']})
+
+    expect(view.get()).toEqual({
+      name: 'William',
+      skills: ['html', 'css', 'js']
+    })
+  })
+
+})
+
 describe('View#setState', function () {
 
   it('should set current state', function () {

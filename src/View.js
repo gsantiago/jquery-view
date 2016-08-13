@@ -206,6 +206,17 @@ fn.get = function (keypath) {
 }
 
 /**
+ * Extends the current data.
+ * @method
+ * @param {Object} obj
+ */
+
+fn.extend = function (obj) {
+  $.extend(this._data, obj)
+  return this
+}
+
+/**
  * Set the current state.
  * @method
  * @api public
