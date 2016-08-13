@@ -59,7 +59,7 @@ describe('View#constructor', function () {
         return $.get('/api/countries')
       },
       init: function () {
-        expect(this.getData()).toEqual(data)
+        expect(this.get()).toEqual(data)
         jasmine.Ajax.uninstall()
         done()
       }
@@ -175,7 +175,7 @@ describe('View#set', function () {
     })
 
     view.set('c', 40)
-    expect(view.getData()).toEqual({a: 20, b: 30, c: 40})
+    expect(view.get()).toEqual({a: 20, b: 30, c: 40})
   })
 
   it('should set an existing property', function () {
@@ -185,7 +185,7 @@ describe('View#set', function () {
     })
 
     view.set('c', 'new value for C')
-    expect(view.getData()).toEqual({
+    expect(view.get()).toEqual({
       a: 1,
       b: 2,
       c: 'new value for C'
@@ -203,7 +203,7 @@ describe('View#set', function () {
 
     view.set('skills.js', 'vanilla')
 
-    expect(view.getData()).toEqual({
+    expect(view.get()).toEqual({
       name: 'David',
       skills: {js: 'vanilla'}
     })
@@ -227,7 +227,7 @@ describe('View#set', function () {
       return value + ', cool!'
     })
 
-    expect(view.getData()).toEqual({
+    expect(view.get()).toEqual({
       a: 'VALUE',
       sub: {
         prop: {test: 'value for test, cool!'}
@@ -252,7 +252,7 @@ describe('View#set', function () {
       return 'java'
     })
 
-    expect(view.getData()).toEqual({
+    expect(view.get()).toEqual({
       skills: {
         frontend: ['html', 'css'],
         backend: ['php', 'java']
@@ -260,6 +260,38 @@ describe('View#set', function () {
     })
   })
 
+})
+
+describe('View#get', function () {
+  var view = new View($('<div>'), {
+    data: {
+      a: 1,
+      b: {
+        c: {
+          d: [0,1,2,3]
+        }
+      },
+      e: 'string'
+    }
+  })
+
+  it('should return the specific value from keypath', function () {
+    expect(view.get('a')).toEqual(1)
+    expect(view.get('b.c.d')).toEqual([0,1,2,3])
+    expect(view.get('e')).toEqual('string')
+  })
+
+  it('should return the whole data', function () {
+    expect(view.get()).toEqual({
+      a: 1,
+      b: {
+        c: {
+          d: [0,1,2,3]
+        }
+      },
+      e: 'string'
+    })
+  })
 })
 
 describe('View#setState', function () {

@@ -147,17 +147,6 @@ fn.getState = function (obj) {
 }
 
 /**
- * Return the current data.
- * @method
- * @api public
- * @returns {Object} data
- */
-
-fn.getData = function () {
-  return this._data
-}
-
-/**
  * Set data.
  * @method
  * @param {String} keypath
@@ -187,6 +176,33 @@ fn.set = function (keypath, value) {
   }
 
   return this
+}
+
+/**
+ * Get data.
+ * If no keypath is passed, then return the whole data.
+ * @method
+ * @param {String} keypath
+ * @returns {*} value
+ */
+
+fn.get = function (keypath) {
+  if (!keypath) return this._data
+
+  var pointer = this._data
+  var props = keypath.split('.')
+  var prop = ''
+
+  while (props.length > 1) {
+    prop = props.shift()
+    if ($.isPlainObject(pointer[prop])) {
+      pointer = pointer[prop]
+    }
+  }
+
+  prop = props[0]
+
+  return pointer[prop]
 }
 
 /**
