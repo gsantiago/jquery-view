@@ -68,7 +68,7 @@ describe('View#constructor', function () {
 
   it('should implement custom methods', function (done) {
     var view = new View($('<div>'), {
-      state: {a: 100},
+      data: {a: 100},
       templateUrl: '',
       init: function () {
         return this
@@ -78,7 +78,7 @@ describe('View#constructor', function () {
       }
     })
 
-    expect(view.state).toBeUndefined()
+    expect(view.data).toBeUndefined()
     expect(view.template).toBeUndefined()
     expect(view.templateUrl).toBeUndefined()
     expect($.isFunction(view.init)).toBeTruthy()
@@ -90,7 +90,7 @@ describe('View#constructor', function () {
     var source = '<div>Hello, {{ str }}!</div>'
     var $el = $(source)
     var view = new View($el, {
-      state: {str: 'Earth'}
+      data: {str: 'Earth'}
     })
 
     expect(view._templateSource).toEqual(source)
@@ -101,7 +101,7 @@ describe('View#constructor', function () {
     var tpl = '<p>{{ content }}</p>'
     var view = new View($('<div>Hey</div>'), {
       template: tpl,
-      state: {content: 'My Beautiful Content!'}
+      data: {content: 'My Beautiful Content!'}
     })
 
     expect(view._templateSource).toEqual('<div><p>{{ content }}</p></div>')
@@ -121,7 +121,7 @@ describe('View#constructor', function () {
     })
 
     var view = new View($('<div>'), {
-      state: {name: 'Guilherme'},
+      data: {name: 'Guilherme'},
       templateUrl: '/templates/my-element.html',
       init: function () {
         expect(this._templateSource).toEqual('<div><p>Welcome, <strong :bind="name"></strong></p></div>')
@@ -150,18 +150,6 @@ describe('View#constructor', function () {
     })
   })
 
-})
-
-describe('View#getState', function () {
-  it('should return current state', function () {
-    var state = {a: 1, b: 2}
-    var view = new View($('<div>'), {
-      state: state
-    })
-
-    expect(view.getState()).toEqual(view._state)
-    expect(view._state).toEqual(state)
-  })
 })
 
 describe('View#set', function () {
@@ -343,7 +331,7 @@ describe('View rendering', function () {
         this.on('ready', function () {
           expect(beforeRenderSpy.calls.count()).toEqual(1)
           expect(afterRenderSpy.calls.count()).toEqual(1)
-          this.setState({a: 1})
+          this.set('a', 1)
           expect(beforeRenderSpy.calls.count()).toEqual(2)
           expect(afterRenderSpy.calls.count()).toEqual(2)
           done()
@@ -354,11 +342,11 @@ describe('View rendering', function () {
 
   it('should update DOM when state changes', function (done) {
     var view = new View($('<div>{{ msg }}</div>'), {
-      state: {msg: 'a'},
+      data: {msg: 'a'},
       init: function () {
         this.on('ready', function () {
           expect(this.$el.html()).toEqual('a')
-          this.setState({msg: 'b'})
+          this.set('msg', 'b')
           expect(this.$el.html()).toEqual('b')
           done()
         })
@@ -419,7 +407,7 @@ describe('View Transclusion', function () {
 
     var view = new View($el, {
       template: source,
-      state: {name: 'Luke'}
+      data: {name: 'Luke'}
     })
 
     expect(view.$el[0]).toEqual($(expected)[0])

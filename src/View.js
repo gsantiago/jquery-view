@@ -26,7 +26,6 @@ var cache = {}
  */
 
 View.defaults = {
-  state: {},
   data: {},
   template: '',
   templateUrl: '',
@@ -48,7 +47,6 @@ function View ($el, options) {
   this.$el = $el
   this.transclusion = $el.html()
   this._options = $.extend({}, View.defaults, options)
-  this._state = {}
   this._data = {}
 
   $.each(this._options, function (key, option) {
@@ -59,9 +57,8 @@ function View ($el, options) {
   this.props = $.extend({}, this._options.props, utils.getProps($el))
   this._directiveEvents = []
 
-  $.when(this._getInitialState(), this._getTemplate(), this._getInitialData())
-    .done(function (state, template, data) {
-      $.extend(self._state, state)
+  $.when(this._getTemplate(), this._getInitialData())
+    .done(function (template, data) {
       $.extend(self._data, data)
       self._templateSource = template
       self._template = new Template(template)
@@ -86,31 +83,6 @@ inherits(View, EventEmitter)
 var fn = View.prototype
 
 /**
- * Get the initial state.
- * @method
- * @api private
- */
-
-fn._getInitialState = function () {
-  var state = this._options.state
-  state = $.isFunction(state)
-    ? state.call(this)
-    : state
-
-  if (state.promise) {
-    var deferred = $.Deferred()
-
-    state.done(function (response) {
-      deferred.resolve(response)
-    }).fail(deferred.reject)
-
-    return deferred.promise()
-  }
-
-  return state
-}
-
-/**
  * Get the initial data.
  * @method
  * @api private
@@ -133,17 +105,6 @@ fn._getInitialData = function () {
   }
 
   return data
-}
-
-/**
- * Return the current state.
- * @method
- * @api public
- * @returns {Object} state
- */
-
-fn.getState = function (obj) {
-  return this._state
 }
 
 /**
@@ -174,6 +135,8 @@ fn.set = function (keypath, value) {
   } else {
     pointer[prop] = utils.resolve(value, pointer[prop])
   }
+
+  this.emit('data change')
 
   return this
 }
@@ -213,24 +176,7 @@ fn.get = function (keypath) {
 
 fn.extend = function (obj) {
   $.extend(this._data, obj)
-  return this
-}
-
-/**
- * Set the current state.
- * @method
- * @api public
- * @emits `state change`
- */
-
-fn.setState = function () {
-  if (arguments.length === 1) {
-    this._state = $.extend(this._state, arguments[0])
-  } else {
-    this._state[arguments[0]] = arguments[1]
-  }
-
-  this.emit('state change', this.getState())
+  this.emit('data change')
   return this
 }
 
@@ -301,10 +247,10 @@ fn._getExternalTemplate = function () {
 
 fn._render = function () {
   var $el = this.$el
-  var currentState = this.getState()
+  var data = this.get()
   var template = this._template
 
-  this.emit('before render', $el, currentState)
+  this.emit('before render', $el, data)
 
   // Clear events
   $.each(this._directiveEvents, function (index, event) {
@@ -317,7 +263,7 @@ fn._render = function () {
 
   this._directiveEvents = []
 
-  var html = template.parse(currentState, this)
+  var html = template.parse(data, this)
 
   morphdom($el[0], html, {
     onBeforeElUpdated: function (fromEl, toEl) {
@@ -336,7 +282,7 @@ fn._render = function () {
       .on(event.type, event.callback)
   })
 
-  this.emit('after render', $el, currentState)
+  this.emit('after render', $el, data)
 }
 
 /**
@@ -348,7 +294,7 @@ fn._render = function () {
  */
 
 fn._start = function () {
-  this.on('state change', this._render)
+  this.on('data change', this._render)
   this.on('before render', this._options.beforeRender)
   this.on('after render', this._options.afterRender)
 
