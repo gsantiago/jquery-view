@@ -58,7 +58,7 @@ describe('View#constructor', function () {
       data: function () {
         return $.get('/api/countries')
       },
-      init: function () {
+      ready: function () {
         expect(this.get()).toEqual(data)
         jasmine.Ajax.uninstall()
         done()
@@ -70,9 +70,6 @@ describe('View#constructor', function () {
     var view = new View($('<div>'), {
       data: {a: 100},
       templateUrl: '',
-      init: function () {
-        return this
-      },
       finish: function () {
         done()
       }
@@ -81,7 +78,6 @@ describe('View#constructor', function () {
     expect(view.data).toBeUndefined()
     expect(view.template).toBeUndefined()
     expect(view.templateUrl).toBeUndefined()
-    expect($.isFunction(view.init)).toBeTruthy()
 
     view.finish()
   })
@@ -123,13 +119,11 @@ describe('View#constructor', function () {
     var view = new View($('<div>'), {
       data: {name: 'Guilherme'},
       templateUrl: '/templates/my-element.html',
-      init: function () {
+      ready: function ($el) {
         expect(this._templateSource).toEqual('<div><p>Welcome, <strong :bind="name"></strong></p></div>')
-        this.on('ready', function ($el) {
-          expect($el.prop('outerHTML')).toEqual(expected)
-          jasmine.Ajax.uninstall()
-          done()
-        })
+        expect($el.prop('outerHTML')).toEqual(expected)
+        jasmine.Ajax.uninstall()
+        done()
       }
     })
   })
@@ -327,15 +321,13 @@ describe('View rendering', function () {
       afterRender: function () {
         afterRenderSpy()
       },
-      init: function () {
-        this.on('ready', function () {
-          expect(beforeRenderSpy.calls.count()).toEqual(1)
-          expect(afterRenderSpy.calls.count()).toEqual(1)
-          this.set('a', 1)
-          expect(beforeRenderSpy.calls.count()).toEqual(2)
-          expect(afterRenderSpy.calls.count()).toEqual(2)
-          done()
-        })
+      ready: function ($el) {
+        expect(beforeRenderSpy.calls.count()).toEqual(1)
+        expect(afterRenderSpy.calls.count()).toEqual(1)
+        this.set('a', 1)
+        expect(beforeRenderSpy.calls.count()).toEqual(2)
+        expect(afterRenderSpy.calls.count()).toEqual(2)
+        done()
       }
     })
   })
@@ -343,13 +335,11 @@ describe('View rendering', function () {
   it('should update DOM when state changes', function (done) {
     var view = new View($('<div>{{ msg }}</div>'), {
       data: {msg: 'a'},
-      init: function () {
-        this.on('ready', function () {
-          expect(this.$el.html()).toEqual('a')
-          this.set('msg', 'b')
-          expect(this.$el.html()).toEqual('b')
-          done()
-        })
+      ready: function () {
+        expect(this.$el.html()).toEqual('a')
+        this.set('msg', 'b')
+        expect(this.$el.html()).toEqual('b')
+        done()
       }
     })
   })

@@ -31,6 +31,7 @@ View.defaults = {
   templateUrl: '',
   beforeRender: $.noop,
   afterRender: $.noop,
+  ready: $.noop,
   props: {}
 }
 
@@ -298,7 +299,6 @@ fn._start = function () {
   this.on('before render', this._options.beforeRender)
   this.on('after render', this._options.afterRender)
 
-  if (this.init) this.init()
   this._render()
-  this.emit('ready', this.$el)
+  this._options.ready.call(this, this.$el)
 }
