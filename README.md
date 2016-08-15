@@ -1,9 +1,15 @@
 # jQuery View
 
+<p style="text-align: center">
 [![Build Status](https://travis-ci.org/gsantiago/jquery-view.svg?branch=master)](https://travis-ci.org/gsantiago/jquery-view)
 [![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg?gsantiago)](https://codeclimate.com/github/gsantiago/jquery-view)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 [![npm version](https://badge.fury.io/js/jquery-view.svg)](https://badge.fury.io/js/jquery-view)
+</p>
+
+<p style="text-align: center">
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/guilhermepolvo.svg)](https://saucelabs.com/u/guilhermepolvo)
+</p>
 
 > NOTE: This project is in early development. Don't use it in production yet.
 
@@ -15,13 +21,13 @@ You can use it like a jQuery plugin:
 
 ```js
 $('.my-view').view({
-  state: {
+  data: {
     users: ['John', 'Peter', 'Mark'],
     clickCount: 0
   },
   clickHandler: function (event, $button) {
-    var count = this.getState().clickCount += 1
-    this.setState({clickCount: count})
+    var count = this.get('clickCount') + 1
+    this.set('clickCount', count)
   }
 })
 ```
@@ -77,7 +83,7 @@ var myView = new View($('.my-view'), {options})
 
 |Name|Type|Description|
 |--------|----|-------|
-|state | Object or Function | Default value for view's state.
+|data | Object or Function | Default value for view's state.
 |template | String | Optional template.
 |templateUrl | String | Use an external template.
 |beforeRender | Function | Callback called before rendering.
