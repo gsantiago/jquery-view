@@ -25,9 +25,9 @@
 
 ## Introduction
 
-jQuery View provides you a simple way to create Views and enhance your HTML.
+jQuery View is an extension for jQuery that allows you to build dynamic views powered by templates and data binding.
 
-You can use it like a jQuery plugin:
+You can use it just like a normal jQuery plugin:
 
 ```js
 $('.my-view').view({
@@ -42,7 +42,7 @@ $('.my-view').view({
 })
 ```
 
-And enjoy its simple DOM-based template:
+And enjoy its simple and expressive DOM-based template:
 
 ```html
 <div class="my-view">
