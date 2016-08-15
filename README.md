@@ -1,6 +1,6 @@
 # jQuery View
 
-<p style="text-align: center">
+<p align="center">
   <a href="https://travis-ci.org/gsantiago/jquery-view">
     <img src="https://travis-ci.org/gsantiago/jquery-view.svg?branch=master" alt="Build Status">
   </a>
@@ -15,7 +15,7 @@
   </a>
 </p>
 
-<p style="text-align: center">
+<p align="center">
   <a href="https://saucelabs.com/u/guilhermepolvo">
     <img src="https://saucelabs.com/browser-matrix/guilhermepolvo.svg" alt="Sauce Test Status">
   </a>
