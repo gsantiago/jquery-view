@@ -59,25 +59,8 @@ var batches = [
   }
 ]
 
-var customLaunchers = {
-  sl_chrome: {
-    base: 'SauceLabs',
-    browserName: 'chrome',
-    platform: 'Windows 7'
-  },
-  sl_firefox: {
-    base: 'SauceLabs',
-    browserName: 'firefox'
-  },
-  sl_mac_safari: {
-    base: 'SauceLabs',
-    browserName: 'safari',
-    platform: 'OS X 10.10'
-  }
-}
-
 module.exports = function (config) {
-  customLaunchers = batches[process.argv[4] || 0]
+  var customLaunchers = batches[process.argv[4] || 0]
 
   config.set(Object.assign(baseConf(config), {
     sauceLabs: {
