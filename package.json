@@ -12,7 +12,9 @@
     "mvc"
   ],
   "scripts": {
-    "test": "./node_modules/karma/bin/karma start"
+    "test": "./node_modules/karma/bin/karma start",
+    "sauce": "karma start ./karma.sauce.conf.js",
+    "sauce-all": "karma start ./karma.sauce.conf.js && karma start ./karma.sauce.conf.js -- 1 karma start ./karma.sauce.conf.js -- 2"
   },
   "repository": {
     "type": "git",
@@ -39,6 +41,7 @@
     "karma-jasmine": "^0.3.7",
     "karma-jasmine-diff-reporter": "^0.3.4",
     "karma-phantomjs-launcher": "^1.0.0",
+    "karma-sauce-launcher": "^1.0.0",
     "morphdom": "^2.0.2",
     "phantomjs-prebuilt": "^2.1.4",
     "vinyl-buffer": "^1.0.0",
