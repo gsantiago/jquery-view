@@ -1,14 +1,24 @@
 # jQuery View
 
 <p style="text-align: center">
-[![Build Status](https://travis-ci.org/gsantiago/jquery-view.svg?branch=master)](https://travis-ci.org/gsantiago/jquery-view)
-[![Code Climate](https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg?gsantiago)](https://codeclimate.com/github/gsantiago/jquery-view)
-[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
-[![npm version](https://badge.fury.io/js/jquery-view.svg)](https://badge.fury.io/js/jquery-view)
+  <a href="https://travis-ci.org/gsantiago/jquery-view">
+    <img src="https://travis-ci.org/gsantiago/jquery-view.svg?branch=master" alt="Build Status">
+  </a>
+  <a href="https://codeclimate.com/github/gsantiago/jquery-view">
+    <img src="https://codeclimate.com/github/gsantiago/jquery-view/badges/gpa.svg?gsantiago" alt="Code Climate">
+  </a>
+  <a href="http://standardjs.com/">
+    <img src="https://img.shields.io/badge/code%20style-standard-brightgreen.svg" alt="js-standard-style">
+  </a>
+  <a href="https://badge.fury.io/js/jquery-view">
+    <img src="https://badge.fury.io/js/jquery-view.svg" alt="npm version">
+  </a>
 </p>
 
 <p style="text-align: center">
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/guilhermepolvo.svg)](https://saucelabs.com/u/guilhermepolvo)
+  <a href="https://saucelabs.com/u/guilhermepolvo">
+    <img src="https://saucelabs.com/browser-matrix/guilhermepolvo.svg" alt="Sauce Test Status">
+  </a>
 </p>
 
 > NOTE: This project is in early development. Don't use it in production yet.
