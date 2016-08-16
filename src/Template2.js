@@ -19,6 +19,7 @@ module.exports = Template
  */
 
 function Template (source, options) {
+  source = source || ''
   this.source = source.trim()
   this.options = $.extend({}, Template.options, options)
 }
@@ -66,4 +67,28 @@ Template.evaluate = function (expression, data, context) {
   }
 
   return ret
+}
+
+/**
+ * Replaces the expressions inside the delimiters.
+ * @method
+ * @param {String} str
+ * @param {Object} data
+ * @param {Object} context
+ * @return {String} result
+ */
+
+fn.supplant = function (str, data, context) {
+  data = data || {}
+  context = context || {}
+
+  str = str.replace(/{{{([^{}]*)}}}/g, function (line, expr) {
+    return Template.evaluate(expr, data, context)
+  })
+
+  str = str.replace(/{{([^{}]*)}}/g, function (line, expr) {
+    return utils.escape(Template.evaluate(expr, data, context))
+  })
+
+  return str
 }

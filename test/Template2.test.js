@@ -84,3 +84,45 @@ describe('Template#evaluate', function () {
     expect(result).toEqual(25)
   })
 })
+
+describe('Template#supplant', function () {
+  beforeEach(function () {
+    this.template = new Template()
+  })
+
+  it('should return 8', function () {
+    var result = this.template.supplant('{{ 4 * 2 }}')
+    expect(result).toEqual('8')
+  })
+
+  it('should return the full name', function () {
+    var result = this.template.supplant('The full name is {{name}} {{lastname}}', {
+      name: 'Peter',
+      lastname: 'Parker'
+    })
+
+    expect(result).toEqual('The full name is Peter Parker')
+  })
+
+  it('should escape strings by default', function () {
+    var str = 'You & I aren\'t <"GREAT">'
+    var expected = 'You &amp; I aren&#x27;t &lt;&quot;GREAT&quot;&gt;'
+    var result = this.template.supplant('{{str}}', {str: str})
+    expect(result).toEqual(expected)
+  })
+
+  it('should unescape strings with special delimiters', function () {
+    var str = 'You & I aren\'t <"GREAT">'
+    var expected = str
+    var result = this.template.supplant('{{{ str }}}', {str: str})
+    expect(result).toEqual(expected)
+  })
+
+  it('should call a function', function (done) {
+    this.template.supplant('{{ func() }}', {
+      func: function () {
+        done()
+      }
+    })
+  })
+})
