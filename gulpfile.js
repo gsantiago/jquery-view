@@ -70,6 +70,14 @@ gulp.task('karma', function (done) {
 gulp.task('test', ['standard', 'karma'])
 
 /**
+ * Watch.
+ */
+
+gulp.task('watch', function () {
+  gulp.watch('src/**/*.js', ['browserify'])
+})
+
+/**
  * Default.
  */
 
