@@ -126,3 +126,57 @@ describe('Template#supplant', function () {
     })
   })
 })
+
+describe('Template#render', function () {
+  it('should return a node', function () {
+    var expected = $('<span>My node</span>')[0]
+    var template = new Template('<span>{{msg}}</span>')
+    var result = template.render({msg: 'My node'})
+    expect(result).toEqual(expected)
+  })
+
+  it('should return a node with children', function () {
+    var str = '' +
+    '<div>' +
+      '<span>{{ id }}</span>' +
+      '<strong>{{ name }}</strong>' +
+    '</div>'
+
+    var expected = Template.prototype.supplant.call({}, str, {
+      id: 100,
+      name: 'John'
+    })
+
+    expected = $(expected)[0]
+
+    var template = new Template(str)
+    var result = template.render({
+      id: 100,
+      name: 'John'
+    })
+
+    expect(result).toEqual(expected)
+  })
+
+  it('should set the attributes value', function () {
+    var str = '' +
+      '<div id="id-{{ index }}" class="{{ class_name }}">' +
+        '<input type="{{ input_type }}" value="{{ value }}">' +
+      '</div>'
+
+    var opts = {
+      index: 5,
+      class_name: 'alert-box',
+      input_type: 'hidden',
+      value: 'input value'
+    }
+
+    var expected = Template.prototype.supplant.call({}, str, opts)
+    expected = $(expected)[0]
+
+    var template = new Template(str)
+    var result = template.render(opts)
+
+    expect(result).toEqual(expected)
+  })
+})

@@ -92,3 +92,19 @@ fn.supplant = function (str, data, context) {
 
   return str
 }
+
+/**
+ * Render.
+ * @method
+ * @param {Object} data
+ * @param {Object} context
+ * @return {Node}
+ */
+
+fn.render = function (data, context) {
+  data = data || {}
+  context = context || {}
+
+  var html = $(this.supplant(this.source, data))
+  return $(html)[0]
+}
