@@ -133,12 +133,20 @@ fn.set = function (keypath, value) {
   var match = prop.match(/^(.*)+\[\]$/i)
 
   if (match) {
-    pointer[match[1]].push(utils.resolve(value, pointer[match[1]]))
+    var oldValue = pointer[match[1]].slice(0)
+    var newValue = utils.resolve(value, oldValue)
+    pointer[match[1]].push(newValue)
+    newValue = pointer[match[1]]
   } else {
-    pointer[prop] = utils.resolve(value, pointer[prop])
+    var oldValue = pointer[prop]
+    var newValue = utils.resolve(value, oldValue)
+    pointer[prop] = newValue
   }
 
+  keypath = keypath.replace('[]', '')
+
   this.emit('data change')
+  this.emit('data:change ' + keypath, newValue, oldValue)
 
   return this
 }
@@ -179,6 +187,18 @@ fn.get = function (keypath) {
 fn.extend = function (obj) {
   $.extend(this._data, obj)
   this.emit('data change')
+  return this
+}
+
+/**
+ * Watches a property for changes.
+ * @method
+ * @param {String} keypath
+ * @param {Function} callback
+ */
+
+fn.watch = function (keypath, cb) {
+  this.on('data:change ' + keypath, cb)
   return this
 }
 

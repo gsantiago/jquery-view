@@ -308,6 +308,40 @@ describe('View#extend', function () {
 
 })
 
+describe('View#watch', function () {
+  it('should listen to property changes', function () {
+    var view = new View($('<div>'), {
+      data: {
+        propA: 'propA value',
+        propB: ['a', 'b', 'c'],
+        propC: 1500
+      }
+    })
+
+    var spyA = jasmine.createSpy()
+    var spyB = jasmine.createSpy()
+    var spyC = jasmine.createSpy()
+
+    view.watch('propA', spyA)
+    view.watch('propB', spyB)
+    view.watch('propC', spyC)
+
+    view.set('propA', 'new value for propA')
+    expect(spyA).toHaveBeenCalledWith('new value for propA', 'propA value')
+
+    view.set('propA', 'new value again')
+    expect(spyA).toHaveBeenCalledWith('new value again', 'new value for propA')
+
+    view.set('propB[]', 'd')
+    expect(spyB).toHaveBeenCalledWith(['a', 'b', 'c', 'd'], ['a', 'b', 'c'])
+
+    view.set('propC', function (currentValue) {
+      return currentValue * 2
+    })
+    expect(spyC).toHaveBeenCalledWith(3000, 1500)
+  })
+})
+
 describe('View rendering', function () {
 
   it('should trigger `before render` and `after render` callbacks', function (done) {
