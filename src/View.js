@@ -57,6 +57,7 @@ function View ($el, options) {
 
   this.props = $.extend({}, this._options.props, utils.getProps($el))
   this._directiveEvents = []
+  this._elementsWithEvents = []
 
   $.when(this._getTemplate(), this._getInitialData())
     .done(function (template, data) {
@@ -247,6 +248,7 @@ fn._getExternalTemplate = function () {
  */
 
 fn._render = function () {
+  var self = this
   var $el = this.$el
   var data = this.get()
   var template = this._template
@@ -254,12 +256,8 @@ fn._render = function () {
   this.emit('before render', $el, data)
 
   // Clear events
-  $.each(this._directiveEvents, function (index, event) {
-    var selector = '[data-view-event-listener="' + index + '"]'
-    $el
-      .filter(selector)
-      .add($el.find(selector))
-      .off(event.type)
+  $.each(this._elementsWithEvents, function (index, item) {
+    item.$el.off(item.event.type)
   })
 
   this._directiveEvents = []
@@ -281,6 +279,9 @@ fn._render = function () {
       .filter(selector)
       .add($el.find(selector))
       .on(event.type, event.callback)
+
+    self._elementsWithEvents.push({el: $el, event: event})
+    $el.removeAttr('data-view-event-listener')
   })
 
   this.emit('after render', $el, data)
