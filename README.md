@@ -65,7 +65,7 @@ Check out a TODO List example here: https://codepen.io/gsantiago/pen/KzyYqw
 
 ## Installation
 
-```npm install jquery-view --save-dev```
+```npm install jquery-view --save```
 
 Then just require it:
 
